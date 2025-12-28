@@ -18,33 +18,32 @@
         body {
             font-family: 'Quicksand', sans-serif;
             background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-            margin: 0; padding: 20px; color: var(--otoño-oscuro);
+            margin: 0; padding: 10px; color: var(--otoño-oscuro);
+            min-height: 100vh;
         }
 
         .container { max-width: 900px; margin: 0 auto; }
         
-        header { text-align: center; margin-bottom: 30px; }
+        header { text-align: center; margin-bottom: 20px; }
         .total-card { 
             background: var(--otoño-oscuro); color: white; padding: 20px; 
-            border-radius: 20px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(62,39,35,0.2);
+            border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(62,39,35,0.2);
         }
-        .total-amount { font-size: 3.5rem; font-weight: 700; color: var(--otoño-amarillo); }
+        .total-amount { font-size: 3rem; font-weight: 700; color: var(--otoño-amarillo); }
 
-        /* Repartidor */
         .repartidor-box {
             background: white; padding: 20px; border-radius: 20px; margin-bottom: 30px;
             border: 2px solid var(--otoño-naranja); text-align: center;
         }
         input { 
-            padding: 10px; border-radius: 10px; border: 1px solid #ccc; 
-            width: 150px; font-size: 1.1rem; margin: 10px;
+            padding: 12px; border-radius: 10px; border: 1px solid #ccc; 
+            width: 80%; max-width: 200px; font-size: 1.1rem; margin-bottom: 10px;
         }
         .btn-repartir {
             background: var(--otoño-naranja); color: white; border: none;
-            padding: 12px 25px; border-radius: 10px; font-weight: bold; cursor: pointer;
+            padding: 12px 25px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 80%; max-width: 250px;
         }
 
-        /* Grid de Cuentas */
         .grid-cuentas {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -54,39 +53,36 @@
         .cuenta-card {
             background: var(--card-bg); border-radius: 20px; overflow: hidden;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-bottom: 5px solid var(--otoño-naranja);
-            transition: transform 0.3s;
         }
-        .cuenta-card:hover { transform: translateY(-5px); }
         
-        .cuenta-img { width: 100%; height: 120px; object-fit: cover; }
+        .cuenta-img { width: 100%; height: 140px; object-fit: cover; }
         
         .cuenta-info { padding: 15px; text-align: center; }
         .cuenta-nombre { font-weight: 700; font-size: 1.2rem; margin: 0; color: var(--otoño-naranja); }
         .cuenta-monto { font-size: 1.8rem; font-weight: 700; margin: 10px 0; color: var(--otoño-oscuro); }
         
-        .controles { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
+        .controles { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
         .btn-ajuste {
-            width: 40px; height: 40px; border-radius: 50%; border: none;
+            width: 50px; height: 50px; border-radius: 12px; border: none;
             font-size: 1.5rem; font-weight: bold; cursor: pointer; color: white;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
         }
         .btn-menos { background: #d32f2f; }
         .btn-mas { background: var(--otoño-verde); }
+        .btn-ajuste:active { transform: scale(0.9); }
         
         .perc-badge { font-size: 0.8rem; background: var(--otoño-crema); padding: 3px 8px; border-radius: 5px; }
-
-        @media (max-width: 600px) {
-            .total-amount { font-size: 2.5rem; }
-        }
+        #status { text-align:center; font-weight: bold; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>🍂 Mis Finanzas de Cosecha</h1>
+        <h1>🍂 Mis Finanzas</h1>
+        <div id="status">Cargando...</div>
         <div class="total-card">
-            <small>FONDO TOTAL DISPONIBLE</small>
+            <small>FONDO ACUMULADO</small>
             <div id="total-general" class="total-amount">Q0.00</div>
         </div>
     </header>
@@ -94,19 +90,27 @@
     <div class="repartidor-box">
         <h3>📥 Ingresar Bono Nuevo</h3>
         <input type="number" id="monto-bono" placeholder="Q 0.00">
+        <br>
         <button class="btn-repartir" onclick="repartirBono()">Repartir por Porcentajes</button>
     </div>
 
-    <div class="grid-cuentas" id="grid-cuentas">
-        </div>
-    
-    <p id="status" style="text-align:center; margin-top:20px; color:#6d4c41;"></p>
+    <div class="grid-cuentas" id="grid-cuentas"></div>
 </div>
 
 <script>
     const GIST_ID = 'dcb2ffeb425b761c097e6f435d434a35';
-    const TOKEN = localStorage.getItem('githubToken') || prompt("Token de GitHub:");
-    if(TOKEN) localStorage.setItem('githubToken', TOKEN);
+    
+    // Función para obtener el token una sola vez y guardarlo bien
+    function obtenerToken() {
+        let t = localStorage.getItem('githubToken');
+        if (!t || t === "null") {
+            t = prompt("Introduce tu Token de GitHub (solo la primera vez):");
+            if (t) localStorage.setItem('githubToken', t);
+        }
+        return t;
+    }
+
+    const TOKEN = obtenerToken();
 
     const REGLA = {
         "Necesidades": { p: 0.50, img: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=400" },
@@ -117,9 +121,11 @@
     };
 
     async function cargar() {
+        if (!TOKEN) return;
         try {
             const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                headers: { 'Authorization': `token ${TOKEN}` }
+                headers: { 'Authorization': `token ${TOKEN}` },
+                cache: 'no-store'
             });
             const data = await res.json();
             const items = JSON.parse(data.files['finanzas.json'].content);
@@ -146,16 +152,25 @@
             });
             document.getElementById('total-general').innerText = `Q${total.toFixed(2)}`;
             document.getElementById('status').innerText = "✅ Sincronizado";
-        } catch (e) { document.getElementById('status').innerText = "❌ Error de conexión"; }
+            document.getElementById('status').style.color = "green";
+        } catch (e) { 
+            document.getElementById('status').innerText = "❌ Error de Token o Gist"; 
+            document.getElementById('status').style.color = "red";
+        }
     }
 
     async function actualizarGist(nuevosDatos) {
-        await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+        document.getElementById('status').innerText = "⏳ Guardando...";
+        const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
             method: 'PATCH',
             headers: { 'Authorization': `token ${TOKEN}` },
             body: JSON.stringify({ files: { "finanzas.json": { content: JSON.stringify(nuevosDatos, null, 2) } } })
         });
-        cargar();
+        if(res.ok) {
+            cargar();
+        } else {
+            alert("Error al guardar. Verifica tu Token.");
+        }
     }
 
     async function repartirBono() {
@@ -176,8 +191,11 @@
     }
 
     async function ajusteIndividual(nombre, tipo) {
-        const cantidad = parseFloat(prompt(`¿Cuánto quieres ${tipo > 0 ? 'sumar' : 'restar'} a ${nombre}?`));
-        if(!cantidad || cantidad <= 0) return;
+        const accion = tipo > 0 ? 'sumar' : 'restar';
+        const cantidadStr = prompt(`¿Cuánto quieres ${accion} a ${nombre}?`);
+        const cantidad = parseFloat(cantidadStr);
+        
+        if(isNaN(cantidad) || cantidad <= 0) return;
 
         const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
         const data = await res.json();
