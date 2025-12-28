@@ -3,108 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanzas de Otoño 🍁 v10</title>
+    <title>Gus: Bosque de Otoño 🍁 v11</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { 
             --otoño-oscuro: #3e2723; --otoño-naranja: #d84315; --otoño-amarillo: #ffb300; 
             --otoño-crema: #fff3e0; --otoño-verde: #558b2f; 
         }
-        body { font-family: 'Quicksand', sans-serif; background: #fff3e0; margin: 0; padding: 10px; color: var(--otoño-oscuro); overflow-x: hidden; }
-        
-        /* Pantalla de Inicio */
-        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--otoño-oscuro); z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; }
-        
+
+        /* FONDO ANIMADO DE PAISAJE */
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            margin: 0; padding: 10px; color: var(--otoño-oscuro);
+            background: linear-gradient(to bottom, #ffcc80, #ffab91, #d7ccc8);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .fog {
+            position: fixed; top: 0; left: 0; width: 200%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/fog.png');
+            opacity: 0.3; z-index: -1; animation: moveFog 60s linear infinite;
+        }
+        @keyframes moveFog { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* PANTALLA DE INICIO */
+        #splash { position: fixed; inset: 0; background: var(--otoño-oscuro); z-index: 9000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; transition: 0.8s; }
+
+        /* GUS ANIMADO (CSS) */
+        #gus-container { position: fixed; bottom: 30px; right: 30px; z-index: 5000; cursor: pointer; transition: 0.5s; }
+        .squirrel { font-size: 80px; display: inline-block; animation: idle 3s ease-in-out infinite; }
+        @keyframes idle { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-10px) rotate(5deg); } }
+        .jump { animation: jump 0.6s ease !important; }
+        @keyframes jump { 0% { transform: scale(1); } 50% { transform: scale(1.3) translateY(-50px); } 100% { transform: scale(1); } }
+
+        #gus-bubble { 
+            position: absolute; bottom: 100px; right: 0; width: 220px; background: white; 
+            padding: 15px; border-radius: 20px; border: 3px solid var(--otoño-naranja);
+            display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-weight: 600;
+        }
+
+        /* INTERFAZ PRINCIPAL */
         .container { max-width: 900px; margin: 0 auto; display: none; }
-        header { text-align: center; padding: 15px; }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);
+            border-radius: 30px; padding: 25px; margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .total-amount { font-size: 3.5rem; font-weight: 800; color: var(--otoño-naranja); text-shadow: 2px 2px 0px white; }
         
-        /* Gus mejorado */
-        #gus-container { position: fixed; bottom: 20px; right: 20px; z-index: 4000; text-align: center; width: 160px; pointer-events: none; }
-        #gus-img { width: 120px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2)); transition: 0.3s; }
-        #gus-bubble { background: white; padding: 12px; border-radius: 15px; font-size: 0.85rem; margin-bottom: 10px; border: 3px solid var(--otoño-naranja); display: none; pointer-events: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .progress-bar { width: 100%; height: 20px; background: #ddd; border-radius: 10px; overflow: hidden; margin: 10px 0; border: 2px solid white; }
+        .progress-fill { height: 100%; background: var(--otoño-verde); width: 0%; transition: 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
 
-        .total-card { background: var(--otoño-oscuro); color: white; padding: 20px; border-radius: 25px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        .total-amount { font-size: 2.8rem; font-weight: 700; color: var(--otoño-amarillo); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 25px; overflow: hidden; transition: 0.3s; border-bottom: 6px solid var(--otoño-naranja); }
+        .card img { width: 100%; height: 130px; object-fit: cover; cursor: pointer; }
         
-        /* Meta de Ahorro */
-        .goal-section { background: white; padding: 15px; border-radius: 20px; margin-bottom: 20px; border: 2px solid var(--otoño-verde); text-align: center; }
-        .progress-bar { width: 100%; height: 15px; background: #eee; border-radius: 10px; overflow: hidden; margin-top: 10px; }
-        .progress-fill { height: 100%; background: var(--otoño-verde); width: 0%; transition: 1s ease; }
+        .btn-main { 
+            background: var(--otoño-naranja); color: white; border: none; 
+            padding: 18px 40px; border-radius: 50px; cursor: pointer; 
+            font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(216, 67, 21, 0.4);
+        }
 
-        .grid-cuentas { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 5px solid var(--otoño-naranja); transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); }
-        .card-img { width: 100%; height: 120px; object-fit: cover; cursor: pointer; }
-        
-        .ajuste-box { background: #fff3e0; padding: 10px; border-radius: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
-        input[type="number"] { padding: 8px; width: 70px; border-radius: 8px; border: 1px solid #ddd; }
-        .btn-min { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; color: white; font-weight: bold; }
-
-        /* Modal Meta */
-        #modal-meta { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 6000; align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 25px; width: 300px; text-align: center; border: 4px solid var(--otoño-amarillo); }
-
-        .btn-main { background: var(--otoño-naranja); color: white; border: none; padding: 15px 30px; border-radius: 50px; cursor: pointer; font-weight: bold; }
-        .leaf { position: fixed; top: -50px; pointer-events: none; z-index: 1500; animation: fall linear forwards; }
-        @keyframes fall { 0% { transform: translateY(0) rotate(0); } 100% { transform: translateY(110vh) rotate(360deg); } }
+        input[type="number"] { padding: 12px; border-radius: 12px; border: 2px solid #eee; width: 80px; font-size: 1rem; }
+        .leaf { position: fixed; top: -50px; pointer-events: none; z-index: 1000; animation: fall linear forwards; font-size: 25px; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
     </style>
 </head>
 <body>
 
-<div id="splash-screen">
-    <h1 style="font-size: 4rem; margin: 0;">🐿️</h1>
-    <h2 style="margin: 10px 0;">Finanzas de Otoño</h2>
-    <p>¡Hola Jose! Haz clic abajo para entrar</p>
-    <button class="btn-main" onclick="entrar()">ENTRAR AL TABLERO</button>
+<div class="fog"></div>
+
+<div id="splash">
+    <div class="squirrel">🐿️</div>
+    <h1>Bosque de Otoño</h1>
+    <p>Toca para despertar a Gus y activar la música</p>
+    <button class="btn-main" onclick="entrar()">ENTRAR AL BOSQUE</button>
 </div>
 
-<div id="modal-meta">
-    <div class="modal-content">
-        <h3>🎯 Definir Meta</h3>
-        <input type="number" id="nueva-meta-input" placeholder="Ej: 5000" style="width: 80%; padding: 10px; margin-bottom: 15px;">
-        <button class="btn-main" onclick="guardarMeta()">Guardar</button>
-        <button onclick="cerrarModal()" style="background:none; border:none; color:gray; cursor:pointer; display:block; margin: 10px auto;">Cerrar</button>
-    </div>
-</div>
-
-<div id="gus-container">
+<div id="gus-container" onclick="hablarGus('¡Hola Jose! Toca cualquier tarjeta para un consejo.')">
     <div id="gus-bubble"></div>
-    <img id="gus-img" src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f43f_fe0f/512.gif" alt="Gus">
+    <div class="squirrel" id="gus-sprite">🐿️</div>
 </div>
 
-<div class="container" id="main-container">
-    <header>
-        <div id="audio-container">
-            <iframe id="reproductor" width="1" height="1" src="https://www.youtube.com/embed/h_r7EIuQj-s?enablejsapi=1" frameborder="0" style="display:none"></iframe>
+<div class="container" id="main">
+    <header class="glass-card" style="text-align: center;">
+        <iframe id="musica" width="1" height="1" src="https://www.youtube.com/embed/h_r7EIuQj-s?enablejsapi=1&loop=1&playlist=h_r7EIuQj-s" frameborder="0" allow="autoplay" style="display:none"></iframe>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <button onclick="abrirMeta()" class="btn-main" style="padding: 10px 20px; font-size: 0.8rem;">🎯 Ajustar Meta</button>
+            <button onclick="cerrarSesion()" style="background: none; border: none; cursor: pointer;">🚪 Salir</button>
         </div>
         
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <button onclick="abrirModal()" style="border-radius:10px; padding:5px 10px; cursor:pointer">🎯 Ajustar Meta</button>
-            <div>
-                <button onclick="reiniciarTodo()" style="color:red; border:none; background:none; cursor:pointer">Reiniciar</button>
-                <button onclick="cerrarSesion()" style="border:none; background:none; cursor:pointer">Salir</button>
-            </div>
-        </div>
+        <small style="letter-spacing: 2px; font-weight: bold;">DISPONIBLE TOTAL</small>
+        <div id="total-val" class="total-amount">Q0.00</div>
 
-        <div class="total-card">
-            <small>ESTADO TOTAL DISPONIBLE</small>
-            <div id="total-general" class="total-amount">Q0.00</div>
-        </div>
-
-        <div class="goal-section">
-            <strong>🎯 Meta de Ahorro: <span id="meta-valor">Q0</span></strong>
-            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-            <small id="progreso-texto">0% alcanzado</small>
+        <div style="margin-top: 15px;">
+            <strong>Meta: <span id="meta-txt">Q0</span></strong>
+            <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+            <small id="perc-txt">0% completado</small>
         </div>
     </header>
 
-    <div style="background:white; padding:20px; border-radius:20px; margin-bottom:20px; text-align:center; border: 2px solid var(--otoño-naranja);">
-        <strong>📥 Repartir Bono</strong><br>
-        <input type="number" id="bono-valor" placeholder="Q 0.00">
-        <button class="btn-main" onclick="repartirBono()" style="padding:10px 20px;">Repartir en %</button>
+    <div class="glass-card" style="text-align: center;">
+        <h3 style="margin-top:0">📥 Repartir Cosecha (Bono)</h3>
+        <input type="number" id="bono" placeholder="Q 0.00" style="width: 150px;">
+        <button class="btn-main" onclick="repartir()" style="padding: 12px 25px;">Repartir %</button>
     </div>
 
-    <div class="grid-cuentas" id="grid"></div>
+    <div class="grid" id="grid"></div>
 </div>
 
 <script>
@@ -112,49 +120,54 @@
     let TOKEN = localStorage.getItem('mi_finanza_token') || prompt("Token de GitHub:");
     if(TOKEN) localStorage.setItem('mi_finanza_token', TOKEN);
 
-    const FRASES = {
-        "Comida": ["🥗 Cocinar en casa es amor propio.", "🍎 ¡Gus dice: esa fruta se ve bien!", "🍕 ¿Y si hoy ahorramos lo del delivery?"],
-        "Ahorro": ["🐿️ ¡Mis nueces están seguras!", "🌟 Un paso más cerca de tu sueño.", "🛡️ Tu tranquilidad no tiene precio."],
-        "Inversión": ["📈 El dinero crece como los árboles.", "🚀 ¡Sembrando para el futuro!", "💎 ¡Gus aprueba este movimiento!"],
-        "Necesidades": ["🏠 Todo bajo control en casa.", "💡 Un gasto necesario es una inversión en paz.", "📅 ¡Pagos al día, mente tranquila!"],
-        "Transporte": ["🚲 ¡A movernos con inteligencia!", "⛽ El ahorro está en la ruta.", "🚗 ¡Gus dice: conduce con cuidado!"]
-    };
-
     const REGLA = {
         "Necesidades": { p: 0.50, img: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=400" },
         "Comida": { p: 0.10, img: "https://images.unsplash.com/photo-1505935428862-770b6f24f629?w=400" },
         "Transporte": { p: 0.10, img: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400" },
         "Ahorro": { p: 0.15, img: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400" },
-        "Inversión": { p: 0.15, img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400" } 
+        "Inversión": { p: 0.15, img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400" }
+    };
+
+    const CONSEJOS = {
+        "Comida": ["Si cocinas en casa, Gus guarda más nueces para después.", "¡Jose! Las ofertas de temporada son tus mejores aliadas.", "Un pequeño gusto al mes es bueno, pero el ahorro es mejor."],
+        "Ahorro": ["¡Mira ese fondo crecer! Me siento muy seguro contigo.", "Cada Quetzal aquí es una semilla para un árbol gigante.", "Gus está orgulloso: el ahorro es la base del éxito."],
+        "Inversión": ["¡Hagamos que el dinero trabaje mientras dormimos!", "Diversificar es como tener varios nidos de nueces.", "El futuro se ve brillante con estas inversiones."],
+        "Necesidades": ["Lo esencial está cubierto, ahora podemos respirar tranquilos.", "Mantener los gastos fijos bajo control es de sabios.", "Gus dice: la organización es la clave de la paz."],
+        "Transporte": ["¿Podemos usar la bici hoy? Gus quiere aire libre.", "Planifica tus rutas y ahorra combustible.", "El transporte eficiente nos permite ahorrar para más nueces."]
     };
 
     function entrar() {
-        document.getElementById('splash-screen').style.display = 'none';
-        document.getElementById('main-container').style.display = 'block';
-        const player = document.getElementById('reproductor');
-        player.src += "&autoplay=1";
-        hablarGus("¡Hola Jose! Ya activé la música y mis nueces.");
+        document.getElementById('splash').style.opacity = '0';
+        setTimeout(() => document.getElementById('splash').style.display = 'none', 800);
+        document.getElementById('main').style.display = 'block';
+        
+        // Activar música forzando interacción
+        const iframe = document.getElementById('musica');
+        iframe.src += "&autoplay=1";
+        
+        hablarGus("¡Bienvenido al bosque, Jose! Ya puse la música de ambiente.");
         cargar();
     }
 
-    function hablarGus(texto, anim = 'happy') {
+    function hablarGus(texto) {
         const bubble = document.getElementById('gus-bubble');
-        const img = document.getElementById('gus-img');
+        const sprite = document.getElementById('gus-sprite');
+        
+        sprite.classList.add('jump');
         bubble.innerText = texto;
         bubble.style.display = 'block';
-        img.style.transform = anim === 'happy' ? 'scale(1.2)' : 'rotate(-10deg)';
-        setTimeout(() => { bubble.style.display = 'none'; img.style.transform = 'scale(1)'; }, 4000);
-    }
-
-    function consejoAleatorio(cuenta) {
-        const lista = FRASES[cuenta];
-        hablarGus(lista[Math.floor(Math.random() * lista.length)]);
+        
+        setTimeout(() => { 
+            bubble.style.display = 'none'; 
+            sprite.classList.remove('jump');
+        }, 8000); // 8 SEGUNDOS PARA LEER
     }
 
     async function cargar() {
         const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
         const data = await res.json();
         const items = JSON.parse(data.files['finanzas.json'].content);
+        
         let total = 0;
         const grid = document.getElementById('grid');
         grid.innerHTML = '';
@@ -162,29 +175,34 @@
         items.forEach(i => {
             total += i.monto;
             grid.innerHTML += `
-                <div class="card">
-                    <img src="${REGLA[i.nombre].img}" class="card-img" onclick="consejoAleatorio('${i.nombre}')">
+                <div class="card glass-card">
+                    <img src="${REGLA[i.nombre].img}" onclick="darConsejo('${i.nombre}')">
                     <div style="padding:15px; text-align:center;">
-                        <strong>${i.nombre} (${REGLA[i.nombre].p*100}%)</strong>
-                        <div class="monto" style="font-size:1.8rem; color:var(--otoño-naranja)">Q${i.monto.toFixed(2)}</div>
-                        <div class="ajuste-box">
-                            <input type="number" id="adj-${i.nombre}" placeholder="Q">
-                            <button class="btn-min" style="background:var(--otoño-verde)" onclick="modificar('${i.nombre}', 1)">+</button>
-                            <button class="btn-min" style="background:#d32f2f" onclick="modificar('${i.nombre}', -1)">-</button>
+                        <strong>${i.nombre}</strong>
+                        <div style="font-size:2rem; font-weight:800; color:var(--otoño-naranja)">Q${i.monto.toFixed(2)}</div>
+                        <div style="margin-top:10px">
+                            <input type="number" id="in-${i.nombre}" placeholder="Q">
+                            <button onclick="modificar('${i.nombre}', 1)" style="background:var(--otoño-verde); color:white; border:none; padding:10px; border-radius:10px; cursor:pointer">+</button>
+                            <button onclick="modificar('${i.nombre}', -1)" style="background:#d32f2f; color:white; border:none; padding:10px; border-radius:10px; cursor:pointer">-</button>
                         </div>
                     </div>
                 </div>`;
         });
-        document.getElementById('total-general').innerText = `Q${total.toFixed(2)}`;
-        actualizarMetaUI(items.find(x => x.nombre === "Ahorro").monto);
+        document.getElementById('total-val').innerText = `Q${total.toFixed(2)}`;
+        actualizarMeta(items.find(x => x.nombre === "Ahorro").monto);
+    }
+
+    function darConsejo(cuenta) {
+        const lista = CONSEJOS[cuenta];
+        hablarGus(lista[Math.floor(Math.random() * lista.length)]);
     }
 
     async function modificar(nombre, signo) {
-        const inp = document.getElementById(`adj-${nombre}`);
+        const inp = document.getElementById(`in-${nombre}`);
         const val = parseFloat(inp.value);
         if(!val) return;
         
-        hablarGus(signo > 0 ? `¡Bien! +Q${val} para ${nombre}` : `Usamos Q${val} de ${nombre}`, signo > 0 ? 'happy' : 'sad');
+        hablarGus(signo > 0 ? `¡Bien! Sumamos Q${val} a ${nombre}.` : `Usamos Q${val} de ${nombre}, ¡a cuidar las nueces!`);
         
         const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
         const data = await res.json();
@@ -194,15 +212,15 @@
         await enviar(items);
     }
 
-    async function repartirBono() {
-        const val = parseFloat(document.getElementById('bono-valor').value);
+    async function repartir() {
+        const val = parseFloat(document.getElementById('bono').value);
         if(!val) return;
-        hablarGus(`¡REPARTO TOTAL! Q${val} a las cuentas.`, 'happy');
+        hablarGus(`¡Wooo! Q${val} repartidos. ¡Gus está feliz!`);
         const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
         const data = await res.json();
         let items = JSON.parse(data.files['finanzas.json'].content);
         items = items.map(i => ({ ...i, monto: i.monto + (val * REGLA[i.nombre].p) }));
-        document.getElementById('bono-valor').value = '';
+        document.getElementById('bono').value = '';
         lanzarHojas();
         await enviar(items);
     }
@@ -216,38 +234,28 @@
         cargar();
     }
 
-    function abrirModal() { document.getElementById('modal-meta').style.display = 'flex'; }
-    function cerrarModal() { document.getElementById('modal-meta').style.display = 'none'; }
-    function guardarMeta() {
-        const m = document.getElementById('nueva-meta-input').value;
-        if(m) { localStorage.setItem('meta_valor', m); cerrarModal(); cargar(); }
-    }
-
-    function actualizarMetaUI(ahorro) {
-        const meta = localStorage.getItem('meta_valor') || 5000;
-        document.getElementById('meta-valor').innerText = "Q" + meta;
-        const perc = Math.min((ahorro / meta) * 100, 100);
-        document.getElementById('progress-fill').style.width = perc + "%";
-        document.getElementById('progreso-texto').innerText = perc.toFixed(1) + "% alcanzado";
-    }
-
     function lanzarHojas() {
-        for(let i=0; i<25; i++) {
+        for(let i=0; i<30; i++) {
             const leaf = document.createElement('div');
-            leaf.className = 'leaf'; leaf.innerText = '🍁';
+            leaf.className = 'leaf'; leaf.innerText = ['🍁','🍂','🍃'][Math.floor(Math.random()*3)];
             leaf.style.left = Math.random() * 100 + "vw";
-            leaf.style.fontSize = Math.random() * 20 + 10 + "px";
             leaf.style.animationDuration = (Math.random() * 2 + 2) + "s";
             document.body.appendChild(leaf);
             setTimeout(() => leaf.remove(), 4000);
         }
     }
 
-    async function reiniciarTodo() {
-        if(confirm("¿Poner todo en cero?")) {
-            const items = Object.keys(REGLA).map(nombre => ({ nombre, monto: 0 }));
-            await enviar(items);
-        }
+    function abrirMeta() {
+        const m = prompt("¿Cuál es tu nueva meta total?");
+        if(m) { localStorage.setItem('meta_v11', m); cargar(); }
+    }
+
+    function actualizarMeta(ahorro) {
+        const meta = localStorage.getItem('meta_v11') || 5000;
+        document.getElementById('meta-txt').innerText = "Q" + meta;
+        const perc = Math.min((ahorro / meta) * 100, 100);
+        document.getElementById('fill').style.width = perc + "%";
+        document.getElementById('perc-txt').innerText = perc.toFixed(1) + "% completado";
     }
 
     function cerrarSesion() { localStorage.clear(); location.reload(); }
