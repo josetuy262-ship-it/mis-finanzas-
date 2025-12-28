@@ -3,61 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Finanzas GT</title>
+    <title>Mis Finanzas</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .card { background: #1c2b3a; color: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 100%; max-width: 350px; }
-        #status { font-size: 14px; margin-bottom: 10px; font-weight: bold; }
-        h1 { font-size: 3.5rem; color: #2ecc71; margin: 10px 0; }
-        .info { color: #bdc3c7; font-size: 0.8rem; margin-top: 15px; }
+        body { font-family: sans-serif; background-color: #1a202c; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background-color: #2d3748; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 15px rgba(0,0,0,0.3); text-align: center; width: 300px; }
+        #status { font-size: 0.8rem; color: #a0aec0; margin-bottom: 1rem; }
+        #total { font-size: 3rem; font-weight: bold; color: #48bb78; margin: 10px 0; }
+        .info { color: #718096; font-size: 0.7rem; margin-top: 20px; }
     </style>
 </head>
 <body>
     <div class="card">
-        <div id="status" style="color: #f1c40f;">⏳ CONECTANDO...</div>
+        <div id="status">CONECTANDO...</div>
         <small>SALDO TOTAL</small>
-        <h1 id="total">Q0.00</h1>
+        <div id="total">Q0.00</div>
         <div class="info">Sincronizado con GitHub Gist</div>
     </div>
 
     <script>
-        // CONFIGURACIÓN (REEMPLAZA EL TOKEN CADA VEZ QUE CREES UNO NUEVO)
+        // CONFIGURACIÓN
         const GIST_ID = 'dcb2ffeb425b761c097e6f435d434a35';
-const TOKEN = prompt("Introduce tu Token de GitHub:");
-        async function iniciar() {
-            const st = document.getElementById('status');
+        const TOKEN = prompt("Introduce tu Token de GitHub (ghp_...):");
+
+        async function cargarSaldo() {
+            const statusEl = document.getElementById('status');
+            const totalEl = document.getElementById('total');
+
+            if (!TOKEN) {
+                statusEl.innerHTML = "❌ TOKEN NO INGRESADO";
+                return;
+            }
+
             try {
-                const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
                     headers: { 'Authorization': `token ${TOKEN}` }
                 });
-                
-                if (res.status === 401) {
-                    st.innerText = "❌ TOKEN INVÁLIDO (GitHub lo borró)";
-                    st.style.color = "#ff4757";
-                    return;
-                }
 
-                const data = await res.json();
-                const contenido = JSON.parse(data.files["finanzas.json"].content);
-                
-                let suma = 0;
-                contenido.forEach(c => suma += c.s);
-                
-                document.getElementById('total').innerText = "Q" + suma.toFixed(2);
-                st.innerText = "✅ CONEXIÓN EXITOSA";
-                st.style.color = "#2ecc71";
-            } catch (e) {
-                st.innerText = "❌ ERROR DE RED O CONFIGURACIÓN";
-                console.error(e);
+                if (response.ok) {
+                    const data = await response.json();
+                    const contenido = JSON.parse(data.files['finanzas.json'].content);
+                    const suma = contenido.reduce((acc, item) => acc + (item.s || 0), 0);
+                    totalEl.innerText = `Q${suma.toFixed(2)}`;
+                    statusEl.innerHTML = "✅ CONECTADO";
+                } else {
+                    statusEl.innerHTML = "❌ ERROR: Token o ID inválido";
+                }
+            } catch (error) {
+                statusEl.innerHTML = "❌ ERROR DE RED O FORMATO";
+                console.error(error);
             }
         }
-        window.onload = iniciar;
+
+        cargarSaldo();
     </script>
 </body>
-
 </html>
-
-
 
 
 
