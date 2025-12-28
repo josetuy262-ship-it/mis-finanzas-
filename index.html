@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanzas de Otoño v5 - Con Consejos</title>
+    <title>Finanzas de Otoño 🍁 vFinal</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --otoño-oscuro: #3e2723; --otoño-naranja: #d84315; --otoño-amarillo: #ffb300; --otoño-crema: #fff3e0; --otoño-verde: #558b2f; }
+        :root { 
+            --otoño-oscuro: #3e2723; --otoño-naranja: #d84315; --otoño-amarillo: #ffb300; 
+            --otoño-crema: #fff3e0; --otoño-verde: #558b2f; --card-bg: #ffffff;
+        }
         body { font-family: 'Quicksand', sans-serif; background: #fff3e0; margin: 0; padding: 10px; color: var(--otoño-oscuro); }
         .container { max-width: 1000px; margin: 0 auto; }
         header { text-align: center; padding: 15px; }
         .total-card { background: var(--otoño-oscuro); color: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); margin-bottom: 20px; }
         .total-amount { font-size: 3rem; font-weight: 700; color: var(--otoño-amarillo); }
         
-        .header-btns { margin-bottom: 15px; display: flex; justify-content: center; gap: 10px; }
+        .header-btns { margin-bottom: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
         .btn-small { font-size: 0.7rem; padding: 5px 10px; border-radius: 5px; border: 1px solid var(--otoño-oscuro); cursor: pointer; background: white; }
 
-        .layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
+        .layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
         @media (max-width: 850px) { .layout { grid-template-columns: 1fr; } }
 
         .input-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 2px solid var(--otoño-naranja); text-align: center; }
@@ -29,31 +32,36 @@
         .card-content { padding: 12px; text-align: center; }
         .monto { font-size: 1.8rem; font-weight: 700; color: var(--otoño-naranja); margin: 5px 0; }
         
-        /* Panel de Consejos */
-        .consejos-panel { background: #5d4037; color: #fff3e0; padding: 20px; border-radius: 20px; height: fit-content; border-left: 8px solid var(--otoño-amarillo); }
-        .consejos-panel h3 { margin-top: 0; color: var(--otoño-amarillo); display: flex; align-items: center; gap: 8px; }
-        .tip-box { font-size: 0.9rem; line-height: 1.4; border-bottom: 1px solid #795548; padding: 10px 0; }
-
         .ajuste-box { background: #fdf2f2; padding: 8px; border-radius: 12px; margin-top: 8px; }
-        .btn-min { padding: 4px 8px; border: none; border-radius: 5px; cursor: pointer; color: white; font-size: 0.75rem; background: var(--otoño-verde); }
-        
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--otoño-oscuro); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; color: white; }
-        .hidden { display: none !important; }
+        .btn-min { padding: 6px 12px; border: none; border-radius: 5px; cursor: pointer; color: white; font-size: 1rem; font-weight: bold; }
+
+        .goal-section { background: white; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 2px solid var(--otoño-verde); text-align: center; }
+        .progress-bar { width: 100%; height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden; margin-top: 10px; }
+        .progress-fill { height: 100%; background: var(--otoño-verde); width: 0%; transition: width 0.8s; }
+
+        .historial-panel { background: white; padding: 20px; border-radius: 20px; margin-top: 20px; border: 2px solid var(--otoño-amarillo); }
+        .movimiento-item { font-size: 0.8rem; border-bottom: 1px solid #eee; padding: 8px 0; display: flex; flex-direction: column; }
+        .mov-header { display: flex; justify-content: space-between; font-weight: bold; }
+        .mov-fecha { font-size: 0.7rem; color: #777; margin-top: 2px; }
+        .add { color: var(--otoño-verde); }
+        .sub { color: #d32f2f; }
+
+        .consejos-panel { background: #5d4037; color: #fff3e0; padding: 20px; border-radius: 20px; border-left: 8px solid var(--otoño-amarillo); }
+        .tip-box { font-size: 0.85rem; padding: 10px 0; border-bottom: 1px solid #795548; }
+
+        .leaf { position: fixed; width: 30px; height: 30px; background-size: contain; background-repeat: no-repeat; pointer-events: none; z-index: 1000; animation: fall linear forwards; }
+        @keyframes fall { 0% { transform: translateY(-50px) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
     </style>
 </head>
 <body>
 
-<div id="login-screen" class="hidden">
-    <h2>🔑 Hola Jose, Configura tu Token</h2>
-    <input type="password" id="token-input" placeholder="Pega tu token aquí...">
-    <button class="btn-main" onclick="guardarToken()" style="margin-top:10px;">Comenzar</button>
-</div>
-
 <div class="container">
     <header>
+        <iframe width="100%" height="80" src="https://www.youtube.com/embed/h_r7EIuQj-s" frameborder="0" style="border-radius:15px; margin-bottom:15px;"></iframe>
         <div class="header-btns">
             <button class="btn-small" onclick="cerrarSesion()">Cerrar Sesión</button>
-            <button class="btn-small" style="color:red" onclick="reiniciarTodo()">🔄 Reiniciar Cifras</button>
+            <button class="btn-small" style="color:red" onclick="reiniciarTodo()">🔄 Reiniciar Todo</button>
+            <button class="btn-small" onclick="configurarMeta()">🎯 Ajustar Meta</button>
         </div>
         <div class="total-card">
             <small>ESTADO FINANCIERO TOTAL</small>
@@ -61,20 +69,30 @@
         </div>
     </header>
 
+    <div class="goal-section">
+        <h3>🎯 Meta de Ahorro: <span id="meta-valor">Q0.00</span></h3>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <p id="progreso-texto" style="font-size: 0.9rem; margin-top:5px;">0% completado</p>
+    </div>
+
     <div class="layout">
         <main>
             <div class="input-card">
-                <strong>📥 Repartir Ingreso Nuevo</strong><br>
+                <strong>📥 Repartir Bono</strong><br>
                 <input type="number" id="bono-valor" placeholder="Q 0.00">
                 <button class="btn-main" onclick="repartirBono()">Repartir %</button>
             </div>
             <div class="grid-cuentas" id="grid"></div>
         </main>
 
-        <aside class="consejos-panel">
-            <h3>💡 Sabiduría Financiera</h3>
-            <div id="tips-container">
-                <div class="tip-box">Cargando consejos personalizados...</div>
+        <aside>
+            <div class="consejos-panel">
+                <h3>💡 Sabiduría</h3>
+                <div id="tips-container"></div>
+            </div>
+            <div class="historial-panel">
+                <h3>📜 Historial Detallado</h3>
+                <div id="historial-list"></div>
             </div>
         </aside>
     </div>
@@ -82,75 +100,71 @@
 
 <script>
     const GIST_ID = 'dcb2ffeb425b761c097e6f435d434a35';
-    let TOKEN = localStorage.getItem('mi_finanza_token');
+    let TOKEN = localStorage.getItem('mi_finanza_token') || prompt("Token de GitHub:");
+    if(TOKEN) localStorage.setItem('mi_finanza_token', TOKEN);
 
     const REGLA = {
         "Necesidades": { p: 0.50, img: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=400" },
         "Comida": { p: 0.10, img: "https://images.unsplash.com/photo-1505935428862-770b6f24f629?w=400" },
         "Transporte": { p: 0.10, img: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400" },
         "Ahorro": { p: 0.15, img: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400" },
-        "Inversión": { p: 0.15, img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400" } // Imagen de Inversión Corregida
+        "Inversión": { p: 0.15, img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400" }
     };
 
-    function guardarToken() {
-        const val = document.getElementById('token-input').value;
-        if(val) { localStorage.setItem('mi_finanza_token', val); location.reload(); }
-    }
-    function cerrarSesion() { localStorage.removeItem('mi_finanza_token'); location.reload(); }
-    if(!TOKEN) document.getElementById('login-screen').classList.remove('hidden');
+    function cerrarSesion() { localStorage.clear(); location.reload(); }
 
     async function cargar() {
-        if(!TOKEN) return;
-        try {
-            const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
-            const data = await res.json();
-            const items = JSON.parse(data.files['finanzas.json'].content);
-            let total = 0;
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
+        const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
+        const data = await res.json();
+        const items = JSON.parse(data.files['finanzas.json'].content);
+        let total = 0;
+        const grid = document.getElementById('grid');
+        grid.innerHTML = '';
 
-            items.forEach(i => {
-                total += i.monto;
-                const conf = REGLA[i.nombre];
-                grid.innerHTML += `
-                    <div class="card">
-                        <img src="${conf.img}" class="card-img">
-                        <div class="card-content">
-                            <strong>${i.nombre} (${conf.p*100}%)</strong>
-                            <div class="monto">Q${i.monto.toFixed(2)}</div>
-                            <div class="ajuste-box">
-                                <input type="number" id="adj-${i.nombre}" placeholder="Q" style="width:60px">
-                                <button class="btn-min" onclick="modificar('${i.nombre}', 1)">+</button>
-                                <button class="btn-min" style="background:#d32f2f" onclick="modificar('${i.nombre}', -1)">-</button>
-                            </div>
+        items.forEach(i => {
+            total += i.monto;
+            const conf = REGLA[i.nombre];
+            grid.innerHTML += `
+                <div class="card">
+                    <img src="${conf.img}" class="card-img">
+                    <div class="card-content">
+                        <strong>${i.nombre} (${conf.p*100}%)</strong>
+                        <div class="monto">Q${i.monto.toFixed(2)}</div>
+                        <div class="ajuste-box">
+                            <input type="number" id="adj-${i.nombre}" placeholder="Q" style="width:60px">
+                            <button class="btn-min" style="background:var(--otoño-verde)" onclick="modificar('${i.nombre}', 1)">+</button>
+                            <button class="btn-min" style="background:#d32f2f" onclick="modificar('${i.nombre}', -1)">-</button>
                         </div>
-                    </div>`;
-            });
-            document.getElementById('total-general').innerText = `Q${total.toFixed(2)}`;
-            generarConsejos(items);
-        } catch(e) { console.error(e); }
+                    </div>
+                </div>`;
+        });
+        document.getElementById('total-general').innerText = `Q${total.toFixed(2)}`;
+        actualizarMeta(items.find(x => x.nombre === "Ahorro").monto);
+        actualizarConsejos(items);
+        mostrarHistorial();
     }
 
-    function generarConsejos(items) {
-        const container = document.getElementById('tips-container');
-        container.innerHTML = '';
-        const tips = [
-            "🍂 <b>Otoño Financiero:</b> Es tiempo de cosechar lo que siembras hoy.",
-            "💰 <b>Regla 50/30/20:</b> Trata de que tus necesidades nunca pasen del 50%."
-        ];
-        
-        const inversion = items.find(i => i.nombre === "Inversión")?.monto || 0;
-        const ahorro = items.find(i => i.nombre === "Ahorro")?.monto || 0;
+    function registrar(accion, monto, cuenta) {
+        let hist = JSON.parse(localStorage.getItem('historial_v5')) || [];
+        const ahora = new Date();
+        const registro = {
+            desc: `${accion === 'add' ? 'Añadió' : 'Quitó'} Q${monto} en ${cuenta}`,
+            fecha: ahora.toLocaleDateString() + " " + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+            clase: accion
+        };
+        hist.unshift(registro);
+        localStorage.setItem('historial_v5', JSON.stringify(hist.slice(0, 10)));
+    }
 
-        if(inversion < 100) tips.push("📈 <b>Tip:</b> Empieza tu inversión aunque sea con poco. El interés compuesto hace milagros.");
-        if(ahorro > 500) tips.push("🏦 <b>Tip:</b> Tienes buen ahorro. ¡Considera mover parte a inversión para que crezca!");
-        if(ahorro < 100) tips.push("🛡️ <b>Tip:</b> Tu fondo de emergencia está bajo. Prioriza el ahorro este mes.");
-        
-        tips.push("🍽️ <b>Tip:</b> Planear tus comidas de la semana reduce el gasto en un 20%.");
-
-        tips.forEach(t => {
-            container.innerHTML += `<div class="tip-box">${t}</div>`;
-        });
+    function mostrarHistorial() {
+        const hist = JSON.parse(localStorage.getItem('historial_v5')) || [];
+        const lista = document.getElementById('historial-list');
+        lista.innerHTML = hist.map(m => `
+            <div class="movimiento-item">
+                <div class="mov-header"><span class="${m.clase}">${m.desc}</span></div>
+                <div class="mov-fecha">📅 ${m.fecha}</div>
+            </div>
+        `).join('');
     }
 
     async function enviar(datos) {
@@ -163,33 +177,58 @@
     }
 
     async function modificar(nombre, signo) {
-        const input = document.getElementById(`adj-${nombre}`);
-        const valor = parseFloat(input.value);
-        if(!valor || valor <= 0) return;
+        const val = parseFloat(document.getElementById(`adj-${nombre}`).value);
+        if(!val) return;
         const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
         const data = await res.json();
         let items = JSON.parse(data.files['finanzas.json'].content);
-        items = items.map(i => i.nombre === nombre ? { ...i, monto: i.monto + (valor * signo) } : i);
+        items = items.map(i => i.nombre === nombre ? { ...i, monto: i.monto + (val * signo) } : i);
+        registrar(signo > 0 ? 'add' : 'sub', val, nombre);
         await enviar(items);
-        input.value = '';
     }
 
     async function repartirBono() {
-        const valor = parseFloat(document.getElementById('bono-valor').value);
-        if(!valor) return;
+        const val = parseFloat(document.getElementById('bono-valor').value);
+        if(!val) return;
         const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
         const data = await res.json();
         let items = JSON.parse(data.files['finanzas.json'].content);
-        items = items.map(i => ({ ...i, monto: i.monto + (valor * REGLA[i.nombre].p) }));
+        items = items.map(i => ({ ...i, monto: i.monto + (val * REGLA[i.nombre].p) }));
+        registrar('add', val, 'Reparto Bono');
+        crearHojas();
         await enviar(items);
-        document.getElementById('bono-valor').value = '';
     }
 
-    async function reiniciarTodo() {
-        if(confirm("¿Seguro que quieres borrar todo?")) {
-            const items = Object.keys(REGLA).map(nombre => ({ nombre: nombre, monto: 0 }));
-            await enviar(items);
+    function crearHojas() {
+        for(let i=0; i<15; i++) {
+            const leaf = document.createElement('div');
+            leaf.className = 'leaf';
+            leaf.style.left = Math.random() * 100 + "vw";
+            leaf.style.animationDuration = (Math.random() * 2 + 2) + "s";
+            leaf.style.backgroundImage = `url('https://www.svgrepo.com/show/276326/leaf.svg')`;
+            document.body.appendChild(leaf);
+            setTimeout(() => leaf.remove(), 4000);
         }
+    }
+
+    function actualizarMeta(ahorro) {
+        const meta = localStorage.getItem('meta_valor') || 5000;
+        document.getElementById('meta-valor').innerText = "Q" + meta;
+        const perc = Math.min((ahorro / meta) * 100, 100);
+        document.getElementById('progress-fill').style.width = perc + "%";
+        document.getElementById('progreso-texto').innerText = perc.toFixed(1) + "% completado";
+    }
+
+    function configurarMeta() {
+        const m = prompt("Nueva meta de ahorro:");
+        if(m) { localStorage.setItem('meta_valor', m); cargar(); }
+    }
+
+    function actualizarConsejos(items) {
+        const container = document.getElementById('tips-container');
+        const ahorro = items.find(x => x.nombre === "Ahorro").monto;
+        container.innerHTML = `<div class="tip-box">🍂 El ahorro actual es de Q${ahorro}. ${ahorro < 500 ? "Prioriza este fondo hoy." : "¡Vas por buen camino!"}</div>`;
+        container.innerHTML += `<div class="tip-box">📈 Invertir el 15% mensual asegura tu futuro. No lo olvides.</div>`;
     }
 
     cargar();
