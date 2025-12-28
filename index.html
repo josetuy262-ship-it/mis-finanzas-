@@ -3,114 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Finanzas de Otoño</title>
+    <title>Finanzas de Otoño v3</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --otoño-oscuro: #3e2723;
-            --otoño-naranja: #d84315;
-            --otoño-amarillo: #ffb300;
-            --otoño-crema: #fff3e0;
-            --otoño-verde: #558b2f;
-            --card-bg: #ffffff;
-        }
-
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-            margin: 0; padding: 10px; color: var(--otoño-oscuro);
-            min-height: 100vh;
-        }
-
-        .container { max-width: 900px; margin: 0 auto; }
-        
-        header { text-align: center; margin-bottom: 20px; }
-        .total-card { 
-            background: var(--otoño-oscuro); color: white; padding: 20px; 
-            border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(62,39,35,0.2);
-        }
+        :root { --otoño-oscuro: #3e2723; --otoño-naranja: #d84315; --otoño-amarillo: #ffb300; --otoño-crema: #fff3e0; --otoño-verde: #558b2f; }
+        body { font-family: 'Quicksand', sans-serif; background: #fff3e0; margin: 0; padding: 10px; color: var(--otoño-oscuro); }
+        .container { max-width: 800px; margin: 0 auto; }
+        header { text-align: center; padding: 20px; }
+        .total-card { background: var(--otoño-oscuro); color: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
         .total-amount { font-size: 3rem; font-weight: 700; color: var(--otoño-amarillo); }
+        
+        /* Panel de entrada de bono */
+        .input-card { background: white; padding: 20px; border-radius: 20px; margin: 20px 0; border: 2px solid var(--otoño-naranja); text-align: center; }
+        input[type="number"] { padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 120px; margin: 5px; }
+        .btn-main { background: var(--otoño-naranja); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        .repartidor-box {
-            background: white; padding: 20px; border-radius: 20px; margin-bottom: 30px;
-            border: 2px solid var(--otoño-naranja); text-align: center;
-        }
-        input { 
-            padding: 12px; border-radius: 10px; border: 1px solid #ccc; 
-            width: 80%; max-width: 200px; font-size: 1.1rem; margin-bottom: 10px;
-        }
-        .btn-repartir {
-            background: var(--otoño-naranja); color: white; border: none;
-            padding: 12px 25px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 80%; max-width: 250px;
-        }
+        /* Grid de Cuentas */
+        .grid-cuentas { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .card-img { width: 100%; height: 120px; object-fit: cover; }
+        .card-content { padding: 15px; text-align: center; }
+        .monto { font-size: 2rem; font-weight: 700; margin: 10px 0; color: var(--otoño-naranja); }
+        
+        /* Controles de ajuste */
+        .ajuste-box { background: #fdf2f2; padding: 10px; border-radius: 12px; margin-top: 10px; }
+        .btn-row { display: flex; justify-content: center; gap: 5px; margin-top: 5px; }
+        .btn-min { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; color: white; font-size: 0.8rem; }
+        .add { background: var(--otoño-verde); }
+        .sub { background: #d32f2f; }
 
-        .grid-cuentas {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .cuenta-card {
-            background: var(--card-bg); border-radius: 20px; overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-bottom: 5px solid var(--otoño-naranja);
-        }
-        
-        .cuenta-img { width: 100%; height: 140px; object-fit: cover; }
-        
-        .cuenta-info { padding: 15px; text-align: center; }
-        .cuenta-nombre { font-weight: 700; font-size: 1.2rem; margin: 0; color: var(--otoño-naranja); }
-        .cuenta-monto { font-size: 1.8rem; font-weight: 700; margin: 10px 0; color: var(--otoño-oscuro); }
-        
-        .controles { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
-        .btn-ajuste {
-            width: 50px; height: 50px; border-radius: 12px; border: none;
-            font-size: 1.5rem; font-weight: bold; cursor: pointer; color: white;
-            display: flex; align-items: center; justify-content: center; transition: 0.2s;
-        }
-        .btn-menos { background: #d32f2f; }
-        .btn-mas { background: var(--otoño-verde); }
-        .btn-ajuste:active { transform: scale(0.9); }
-        
-        .perc-badge { font-size: 0.8rem; background: var(--otoño-crema); padding: 3px 8px; border-radius: 5px; }
-        #status { text-align:center; font-weight: bold; margin-bottom: 10px; }
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--otoño-oscuro); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; color: white; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
+<div id="login-screen" class="hidden">
+    <h2>🔑 Configuración Inicial</h2>
+    <p>Pega tu Token de GitHub para empezar</p>
+    <input type="password" id="token-input" style="width: 250px;">
+    <button class="btn-main" onclick="guardarToken()">Entrar</button>
+</div>
+
 <div class="container">
     <header>
         <h1>🍂 Mis Finanzas</h1>
-        <div id="status">Cargando...</div>
+        <button onclick="cerrarSesion()" style="font-size: 0.7rem;">Cerrar Sesión (Borrar Token)</button>
         <div class="total-card">
-            <small>FONDO ACUMULADO</small>
+            <small>SALDO TOTAL</small>
             <div id="total-general" class="total-amount">Q0.00</div>
         </div>
     </header>
 
-    <div class="repartidor-box">
-        <h3>📥 Ingresar Bono Nuevo</h3>
-        <input type="number" id="monto-bono" placeholder="Q 0.00">
-        <br>
-        <button class="btn-repartir" onclick="repartirBono()">Repartir por Porcentajes</button>
+    <div class="input-card">
+        <h3>💰 Repartir Bono (Bono/Sueldo)</h3>
+        <input type="number" id="bono-valor" placeholder="Q 0.00">
+        <button class="btn-main" onclick="repartirBono()">Repartir %</button>
     </div>
 
-    <div class="grid-cuentas" id="grid-cuentas"></div>
+    <div class="grid-cuentas" id="grid"></div>
 </div>
 
 <script>
     const GIST_ID = 'dcb2ffeb425b761c097e6f435d434a35';
-    
-    // Función para obtener el token una sola vez y guardarlo bien
-    function obtenerToken() {
-        let t = localStorage.getItem('githubToken');
-        if (!t || t === "null") {
-            t = prompt("Introduce tu Token de GitHub (solo la primera vez):");
-            if (t) localStorage.setItem('githubToken', t);
-        }
-        return t;
-    }
-
-    const TOKEN = obtenerToken();
+    let TOKEN = localStorage.getItem('mi_finanza_token');
 
     const REGLA = {
         "Necesidades": { p: 0.50, img: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=400" },
@@ -120,95 +76,91 @@
         "Inversión": { p: 0.15, img: "https://images.unsplash.com/photo-1611974714020-093186259e8a?w=400" }
     };
 
+    function guardarToken() {
+        const val = document.getElementById('token-input').value;
+        if(val) {
+            localStorage.setItem('mi_finanza_token', val);
+            location.reload();
+        }
+    }
+
+    function cerrarSesion() {
+        localStorage.removeItem('mi_finanza_token');
+        location.reload();
+    }
+
+    if(!TOKEN) {
+        document.getElementById('login-screen').classList.remove('hidden');
+    }
+
     async function cargar() {
-        if (!TOKEN) return;
+        if(!TOKEN) return;
         try {
             const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                headers: { 'Authorization': `token ${TOKEN}` },
-                cache: 'no-store'
+                headers: { 'Authorization': `token ${TOKEN}` }
             });
             const data = await res.json();
             const items = JSON.parse(data.files['finanzas.json'].content);
-            
             let total = 0;
-            const grid = document.getElementById('grid-cuentas');
+            const grid = document.getElementById('grid');
             grid.innerHTML = '';
 
             items.forEach(i => {
                 total += i.monto;
-                const config = REGLA[i.nombre] || { p: 0, img: "" };
+                const conf = REGLA[i.nombre];
                 grid.innerHTML += `
-                    <div class="cuenta-card">
-                        <img src="${config.img}" class="cuenta-img">
-                        <div class="cuenta-info">
-                            <p class="cuenta-nombre">${i.nombre} <span class="perc-badge">${config.p*100}%</span></p>
-                            <p class="cuenta-monto">Q${i.monto.toFixed(2)}</p>
-                            <div class="controles">
-                                <button class="btn-ajuste btn-menos" onclick="ajusteIndividual('${i.nombre}', -1)">-</button>
-                                <button class="btn-ajuste btn-mas" onclick="ajusteIndividual('${i.nombre}', 1)">+</button>
+                    <div class="card">
+                        <img src="${conf.img}" class="card-img">
+                        <div class="card-content">
+                            <strong>${i.nombre} (${conf.p*100}%)</strong>
+                            <div class="monto">Q${i.monto.toFixed(2)}</div>
+                            <div class="ajuste-box">
+                                <input type="number" id="adj-${i.nombre}" placeholder="Cantidad" style="width: 80px;">
+                                <div class="btn-row">
+                                    <button class="btn-min add" onclick="modificar('${i.nombre}', 1)">Añadir</button>
+                                    <button class="btn-min sub" onclick="modificar('${i.nombre}', -1)">Quitar</button>
+                                </div>
                             </div>
                         </div>
                     </div>`;
             });
             document.getElementById('total-general').innerText = `Q${total.toFixed(2)}`;
-            document.getElementById('status').innerText = "✅ Sincronizado";
-            document.getElementById('status').style.color = "green";
-        } catch (e) { 
-            document.getElementById('status').innerText = "❌ Error de Token o Gist"; 
-            document.getElementById('status').style.color = "red";
-        }
+        } catch(e) { console.error(e); }
     }
 
-    async function actualizarGist(nuevosDatos) {
-        document.getElementById('status').innerText = "⏳ Guardando...";
-        const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+    async function enviar(datos) {
+        await fetch(`https://api.github.com/gists/${GIST_ID}`, {
             method: 'PATCH',
             headers: { 'Authorization': `token ${TOKEN}` },
-            body: JSON.stringify({ files: { "finanzas.json": { content: JSON.stringify(nuevosDatos, null, 2) } } })
+            body: JSON.stringify({ files: { "finanzas.json": { content: JSON.stringify(datos, null, 2) } } })
         });
-        if(res.ok) {
-            cargar();
-        } else {
-            alert("Error al guardar. Verifica tu Token.");
-        }
+        cargar();
+    }
+
+    async function modificar(nombre, signo) {
+        const input = document.getElementById(`adj-${nombre}`);
+        const valor = parseFloat(input.value);
+        if(!valor || valor <= 0) return;
+
+        const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
+        const data = await res.json();
+        let items = JSON.parse(data.files['finanzas.json'].content);
+
+        items = items.map(i => i.nombre === nombre ? { ...i, monto: i.monto + (valor * signo) } : i);
+        await enviar(items);
+        input.value = '';
     }
 
     async function repartirBono() {
-        const monto = parseFloat(document.getElementById('monto-bono').value);
-        if(!monto || monto <= 0) return;
-        
+        const valor = parseFloat(document.getElementById('bono-valor').value);
+        if(!valor) return;
         const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
         const data = await res.json();
         let items = JSON.parse(data.files['finanzas.json'].content);
 
-        items = items.map(i => ({
-            nombre: i.nombre,
-            monto: i.monto + (monto * (REGLA[i.nombre]?.p || 0))
-        }));
-
-        await actualizarGist(items);
-        document.getElementById('monto-bono').value = '';
-    }
-
-    async function ajusteIndividual(nombre, tipo) {
-        const accion = tipo > 0 ? 'sumar' : 'restar';
-        const cantidadStr = prompt(`¿Cuánto quieres ${accion} a ${nombre}?`);
-        const cantidad = parseFloat(cantidadStr);
-        
-        if(isNaN(cantidad) || cantidad <= 0) return;
-
-        const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
-        const data = await res.json();
-        let items = JSON.parse(data.files['finanzas.json'].content);
-
-        items = items.map(i => {
-            if(i.nombre === nombre) {
-                return { nombre: i.nombre, monto: i.monto + (cantidad * tipo) };
-            }
-            return i;
-        });
-
-        await actualizarGist(items);
+        items = items.map(i => ({ ...i, monto: i.monto + (valor * REGLA[i.nombre].p) }));
+        await enviar(items);
+        document.getElementById('bono-valor').value = '';
     }
 
     cargar();
