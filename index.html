@@ -3,117 +3,363 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repartidor Inteligente</title>
+    <title>Mi Tablero Financiero Inspirador</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --accent: #10b981; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; display: flex; justify-content: center; padding: 20px; }
-        .container { width: 100%; max-width: 400px; }
-        .card { background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid #334155; }
-        .total-box { text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #334155; }
-        .total-amount { font-size: 3rem; font-weight: 800; color: var(--accent); }
-        
-        .input-group { background: #0f172a; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
-        input { width: 100%; background: transparent; border: none; color: white; font-size: 1.2rem; outline: none; text-align: center; }
-        button { width: 100%; background: var(--accent); border: none; padding: 12px; border-radius: 8px; color: #0f172a; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #059669; }
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --text-color: #c9d1d9;
+            --accent-color: #238636;
+            --secondary-accent: #58a6ff;
+            --border-color: #30363d;
+        }
 
-        .cat-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #334155; }
-        .cat-name { font-size: 0.9rem; color: #94a3b8; }
-        .cat-val { font-weight: bold; color: #38bdf8; }
-        .perc-tag { font-size: 0.7rem; background: #334155; padding: 2px 6px; border-radius: 4px; margin-left: 8px; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alineación superior para scroll en móvil */
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px; /* Ancho máximo para pantallas grandes */
+            display: flex;
+            flex-wrap: wrap; /* Permite que los elementos se envuelvan */
+            gap: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+            justify-content: center; /* Centrar elementos en la fila */
+        }
+
+        .main-panel, .image-panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+        }
+
+        .main-panel {
+            flex: 2; /* Ocupa más espacio que el panel de imagen */
+            min-width: 300px; /* Ancho mínimo para el panel principal */
+        }
+
+        .image-panel {
+            flex: 1; /* Ocupa menos espacio */
+            min-width: 250px; /* Ancho mínimo para el panel de imagen */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden; /* Para las imágenes */
+        }
+
+        .motivational-image {
+            width: 100%;
+            height: 200px; /* Altura fija para la imagen */
+            object-fit: cover; /* Recortar si es necesario */
+            border-radius: 8px;
+            margin-bottom: 15px;
+            filter: brightness(0.8) grayscale(0.2);
+            transition: transform 0.3s ease;
+        }
+        .motivational-image:hover {
+            transform: scale(1.03);
+            filter: brightness(1) grayscale(0);
+        }
+
+        .image-panel p {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--accent-color);
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .total-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .total-label {
+            font-size: 0.9rem;
+            color: #8b949e;
+            margin-bottom: 5px;
+        }
+        .total-amount {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--secondary-accent);
+        }
+
+        .input-section {
+            background-color: var(--bg-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+        .input-label {
+            font-size: 0.8rem;
+            color: #8b949e;
+            margin-bottom: 8px;
+            display: block;
+            text-align: center;
+        }
+        input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 12px 10px;
+            margin-bottom: 15px;
+            background-color: #010409;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        input[type="number"]:focus {
+            border-color: var(--accent-color);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #2ea043;
+        }
+
+        .category-list .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .category-list .category-item:last-child {
+            border-bottom: none;
+        }
+        .category-name-tag {
+            font-size: 0.95rem;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+        }
+        .category-value {
+            font-weight: 600;
+            color: var(--secondary-accent);
+            font-size: 1rem;
+        }
+        .percentage-tag {
+            background-color: #30363d;
+            color: #c9d1d9;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        .status-message {
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 20px;
+            padding: 8px;
+            border-radius: 6px;
+            color: #c9d1d9;
+            background-color: #21262d;
+            border: 1px solid var(--border-color);
+        }
+        .status-success { background-color: #0e4429; border-color: #238636; color: #34d058; }
+        .status-error { background-color: #601a1a; border-color: #8e2b2b; color: #f85149; }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .main-panel, .image-panel {
+                width: 100%;
+                max-width: 500px; /* Limita el ancho en móvil si es muy grande */
+            }
+            .total-amount { font-size: 3rem; }
+            .motivational-image { height: 180px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card">
-            <div class="total-box">
-                <small>BALANCE TOTAL</small>
+        <div class="main-panel">
+            <h1>📊 Mi Tablero Financiero</h1>
+            
+            <div class="total-section">
+                <div class="total-label">SALDO TOTAL ACUMULADO</div>
                 <div id="total-general" class="total-amount">Q0.00</div>
             </div>
 
-            <div class="input-group">
-                <small style="color: #94a3b8; display: block; margin-bottom: 5px;">REPARTIR NUEVO INGRESO / BONO</small>
-                <input type="number" id="nuevo-monto" placeholder="Q0.00">
-                <button onclick="repartirMonto()" style="margin-top: 10px;">REPARTIR PORCENTAJES</button>
+            <div class="input-section">
+                <label for="nuevo-monto" class="input-label">INGRESA UN NUEVO BONO / INGRESO</label>
+                <input type="number" id="nuevo-monto" placeholder="Ej: 1500.00">
+                <button onclick="repartirMonto()">REPARTIR AUTOMÁTICAMENTE</button>
             </div>
 
-            <div id="lista-categorias">
+            <div class="category-list" id="lista-categorias">
                 </div>
             
-            <p id="status" style="font-size: 0.7rem; text-align: center; margin-top: 15px; color: #4b5563;">Conectado a Gist</p>
+            <p id="status" class="status-message">Cargando datos...</p>
+        </div>
+
+        <div class="image-panel">
+            <img src="https://images.unsplash.com/photo-1517486447833-28f32da205b3?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Visión financiera" class="motivational-image">
+            <p>
+                "Cada moneda que ahorras es una semilla para tu futuro. Cultiva tu prosperidad con disciplina y visión."
+            </p>
         </div>
     </div>
 
     <script>
         const GIST_ID = 'dcb2ffeb425b761c097e6f435d434a35';
-        const TOKEN = prompt("Introduce tu Token:");
+        let TOKEN = localStorage.getItem('githubToken') || ''; // Intentar cargar token guardado
+
+        // Si no hay token guardado o es la primera vez, pedirlo
+        if (!TOKEN) {
+            TOKEN = prompt("Por favor, introduce tu Token de GitHub (ghp_...):");
+            if (TOKEN) {
+                localStorage.setItem('githubToken', TOKEN); // Guardar el token en el navegador
+            } else {
+                alert("Necesitas un Token para acceder a tus finanzas.");
+            }
+        }
         
-        // AQUÍ DEFINES TUS PORCENTAJES (Asegúrate que sumen 100)
+        // PORCENTAJES ACTUALIZADOS SEGÚN TU PETICIÓN
         const REGLA = {
             "Necesidades": 0.50, // 50%
-            "Comida": 0.20,      // 20%
-            "Ahorro": 0.15,      // 15%
-            "Inversión": 0.10,   // 10%
-            "Transporte": 0.05   // 5%
+            "Comida": 0.15,      // 15%
+            "Transporte": 0.15,  // 15%
+            "Ahorro": 0.10,      // 10%
+            "Inversión": 0.10    // 10%
         };
 
         async function cargar() {
-            const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                headers: { 'Authorization': `token ${TOKEN}` }
-            });
-            const data = await res.json();
-            const items = JSON.parse(data.files['finanzas.json'].content);
-            
-            let total = 0;
-            const lista = document.getElementById('lista-categorias');
-            lista.innerHTML = '';
+            const statusEl = document.getElementById('status');
+            try {
+                if (!TOKEN) {
+                    statusEl.className = 'status-message status-error';
+                    statusEl.innerText = '❌ Error: Token no proporcionado.';
+                    return;
+                }
+                const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    headers: { 'Authorization': `token ${TOKEN}` }
+                });
 
-            items.forEach(i => {
-                total += i.monto;
-                const pct = (REGLA[i.nombre] * 100) || 0;
-                lista.innerHTML += `
-                    <div class="cat-item">
-                        <span class="cat-name">${i.nombre} <span class="perc-tag">${pct}%</span></span>
-                        <span class="cat-val">Q${i.monto.toFixed(2)}</span>
-                    </div>`;
-            });
-            document.getElementById('total-general').innerText = `Q${total.toFixed(2)}`;
+                if (!res.ok) {
+                    throw new Error('No autorizado o Gist no encontrado.');
+                }
+                
+                const data = await res.json();
+                const items = JSON.parse(data.files['finanzas.json'].content);
+                
+                let total = 0;
+                const lista = document.getElementById('lista-categorias');
+                lista.innerHTML = '';
+
+                items.forEach(i => {
+                    total += i.monto;
+                    const pct = (REGLA[i.nombre] * 100) || 0;
+                    lista.innerHTML += `
+                        <div class="category-item">
+                            <span class="category-name-tag">${i.nombre} <span class="percentage-tag">${pct}%</span></span>
+                            <span class="category-value">Q${i.monto.toFixed(2)}</span>
+                        </div>`;
+                });
+                document.getElementById('total-general').innerText = `Q${total.toFixed(2)}`;
+                statusEl.className = 'status-message status-success';
+                statusEl.innerText = '✅ Datos actualizados correctamente.';
+            } catch (e) {
+                console.error("Error al cargar:", e);
+                statusEl.className = 'status-message status-error';
+                statusEl.innerText = `❌ Error: ${e.message || 'Token inválido o problemas de red.'}`;
+                localStorage.removeItem('githubToken'); // Limpiar token si hay un error
+            }
         }
 
         async function repartirMonto() {
-            const montoIngresado = parseFloat(document.getElementById('nuevo-monto').value);
-            if (!montoIngresado || montoIngresado <= 0) return alert("Ingresa un monto válido");
+            const valInput = document.getElementById('nuevo-monto').value;
+            const montoIngresado = parseFloat(valInput);
 
-            document.getElementById('status').innerText = "Repartiendo...";
+            if (!montoIngresado || montoIngresado <= 0) {
+                alert("Por favor ingresa una cantidad válida y mayor a cero.");
+                return;
+            }
 
-            // 1. Obtener datos actuales
-            const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                headers: { 'Authorization': `token ${TOKEN}` }
-            });
-            const data = await res.json();
-            let items = JSON.parse(data.files['finanzas.json'].content);
+            const statusEl = document.getElementById('status');
+            statusEl.className = 'status-message';
+            statusEl.innerText = "Repartiendo y guardando...";
 
-            // 2. Sumar el porcentaje a cada categoría
-            items = items.map(item => {
-                const porcentaje = REGLA[item.nombre] || 0;
-                return {
-                    nombre: item.nombre,
-                    monto: item.monto + (montoIngresado * porcentaje)
-                };
-            });
+            try {
+                const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    headers: { 'Authorization': `token ${TOKEN}` }
+                });
+                if (!res.ok) throw new Error('No autorizado o Gist no encontrado al intentar repartir.');
 
-            // 3. Guardar en GitHub
-            await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                method: 'PATCH',
-                headers: { 'Authorization': `token ${TOKEN}` },
-                body: JSON.stringify({
-                    files: { "finanzas.json": { content: JSON.stringify(items, null, 2) } }
-                })
-            });
+                const data = await res.json();
+                let items = JSON.parse(data.files['finanzas.json'].content);
 
-            document.getElementById('nuevo-monto').value = '';
-            document.getElementById('status').innerText = "✅ ¡Repartido con éxito!";
-            cargar();
+                items = items.map(item => {
+                    const pct = REGLA[item.nombre] || 0;
+                    const extra = montoIngresado * pct;
+                    return {
+                        nombre: item.nombre,
+                        monto: item.monto + extra
+                    };
+                });
+
+                const patchRes = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `token ${TOKEN}` },
+                    body: JSON.stringify({
+                        files: { "finanzas.json": { content: JSON.stringify(items, null, 2) } }
+                    })
+                });
+
+                if(patchRes.ok) {
+                    document.getElementById('nuevo-monto').value = '';
+                    statusEl.className = 'status-message status-success';
+                    statusEl.innerText = "✅ ¡Bono repartido con éxito!";
+                    cargar(); // Recargar para mostrar los nuevos saldos
+                } else {
+                    throw new Error('No se pudo actualizar el Gist.');
+                }
+
+            } catch (error) {
+                console.error("Error al repartir:", error);
+                alert(`Error al guardar: ${error.message}. Por favor, revisa tu Token.`);
+                statusEl.className = 'status-message status-error';
+                statusEl.innerText = `❌ Error al guardar: ${error.message || 'Token inválido.'}`;
+            }
         }
 
         cargar();
