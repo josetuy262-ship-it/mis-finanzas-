@@ -3,36 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Finanzas</title>
+    <title>Mi Control de Finanzas</title>
     <style>
-        body { font-family: sans-serif; background-color: #1a202c; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background-color: #2d3748; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 15px rgba(0,0,0,0.3); text-align: center; width: 300px; }
-        #status { font-size: 0.8rem; color: #a0aec0; margin-bottom: 1rem; }
-        #total { font-size: 3rem; font-weight: bold; color: #48bb78; margin: 10px 0; }
-        .info { color: #718096; font-size: 0.7rem; margin-top: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #1a202c; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background-color: #2d3748; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 20px 25px rgba(0,0,0,0.5); width: 350px; }
+        h2 { margin: 0; font-size: 1.2rem; color: #a0aec0; text-align: center; }
+        .total-amount { font-size: 3rem; font-weight: bold; color: #48bb78; text-align: center; margin: 10px 0; border-bottom: 2px solid #4a5568; padding-bottom: 10px; }
+        .category-list { margin-top: 20px; }
+        .category-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #4a5568; }
+        .category-name { color: #cbd5e0; }
+        .category-value { font-weight: bold; color: #63b3ed; }
+        #status { font-size: 0.7rem; text-align: center; margin-bottom: 1rem; color: #f6ad55; }
     </style>
 </head>
 <body>
     <div class="card">
         <div id="status">CONECTANDO...</div>
-        <small>SALDO TOTAL</small>
-        <div id="total">Q0.00</div>
-        <div class="info">Sincronizado con GitHub Gist</div>
+        <h2>SALDO TOTAL</h2>
+        <div id="total-general" class="total-amount">Q0.00</div>
+        
+        <div class="category-list" id="lista-categorias">
+            </div>
+        
+        <div style="text-align: center; margin-top: 20px; font-size: 0.6rem; color: #718096;">
+            Sincronizado con GitHub Gist
+        </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN
         const GIST_ID = 'dcb2ffeb425b761c097e6f435d434a35';
-        const TOKEN = prompt("Introduce tu Token de GitHub (ghp_...):");
+        const TOKEN = prompt("Introduce tu Token de GitHub:");
 
-        async function cargarSaldo() {
+        async function cargarFinanzas() {
             const statusEl = document.getElementById('status');
-            const totalEl = document.getElementById('total');
-
-            if (!TOKEN) {
-                statusEl.innerHTML = "❌ TOKEN NO INGRESADO";
-                return;
-            }
+            const listaEl = document.getElementById('lista-categorias');
+            const totalGenEl = document.getElementById('total-general');
 
             try {
                 const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
@@ -42,23 +47,34 @@
                 if (response.ok) {
                     const data = await response.json();
                     const contenido = JSON.parse(data.files['finanzas.json'].content);
-                    const suma = contenido.reduce((acc, item) => acc + (item.s || 0), 0);
-                    totalEl.innerText = `Q${suma.toFixed(2)}`;
-                    statusEl.innerHTML = "✅ CONECTADO";
+                    
+                    let sumaTotal = 0;
+                    listaEl.innerHTML = ''; // Limpiar lista
+
+                    contenido.forEach(item => {
+                        sumaTotal += item.monto;
+                        listaEl.innerHTML += `
+                            <div class="category-item">
+                                <span class="category-name">${item.nombre}</span>
+                                <span class="category-value">Q${item.monto.toFixed(2)}</span>
+                            </div>
+                        `;
+                    });
+
+                    totalGenEl.innerText = `Q${sumaTotal.toFixed(2)}`;
+                    statusEl.innerHTML = "✅ DATOS ACTUALIZADOS";
                 } else {
-                    statusEl.innerHTML = "❌ ERROR: Token o ID inválido";
+                    statusEl.innerHTML = "❌ ERROR DE CONEXIÓN";
                 }
             } catch (error) {
-                statusEl.innerHTML = "❌ ERROR DE RED O FORMATO";
-                console.error(error);
+                statusEl.innerHTML = "❌ ERROR DE FORMATO";
             }
         }
 
-        cargarSaldo();
+        cargarFinanzas();
     </script>
 </body>
 </html>
-
 
 
 
