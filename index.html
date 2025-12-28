@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Finanzas GT</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .card { background: #1c2b3a; color: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 100%; max-width: 350px; }
+        #status { font-size: 14px; margin-bottom: 10px; font-weight: bold; }
+        h1 { font-size: 3.5rem; color: #2ecc71; margin: 10px 0; }
+        .info { color: #bdc3c7; font-size: 0.8rem; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div id="status" style="color: #f1c40f;">⏳ CONECTANDO...</div>
+        <small>SALDO TOTAL</small>
+        <h1 id="total">Q0.00</h1>
+        <div class="info">Sincronizado con GitHub Gist</div>
+    </div>
+
+    <script>
+        // CONFIGURACIÓN (REEMPLAZA EL TOKEN CADA VEZ QUE CREES UNO NUEVO)
+        const GIST_ID = 'c82d55cf1db45f15e9b7bcfdf7852e1a';
+        const TOKEN = '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'; 
+
+        async function iniciar() {
+            const st = document.getElementById('status');
+            try {
+                const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    headers: { 'Authorization': `token ${TOKEN}` }
+                });
+                
+                if (res.status === 401) {
+                    st.innerText = "❌ TOKEN INVÁLIDO (GitHub lo borró)";
+                    st.style.color = "#ff4757";
+                    return;
+                }
+
+                const data = await res.json();
+                const contenido = JSON.parse(data.files["finanzas.json"].content);
+                
+                let suma = 0;
+                contenido.forEach(c => suma += c.s);
+                
+                document.getElementById('total').innerText = "Q" + suma.toFixed(2);
+                st.innerText = "✅ CONEXIÓN EXITOSA";
+                st.style.color = "#2ecc71";
+            } catch (e) {
+                st.innerText = "❌ ERROR DE RED O CONFIGURACIÓN";
+                console.error(e);
+            }
+        }
+        window.onload = iniciar;
+    </script>
+</body>
+</html>
