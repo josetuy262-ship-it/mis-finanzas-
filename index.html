@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanzas de Otoño v3</title>
+    <title>Finanzas de Otoño v4</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --otoño-oscuro: #3e2723; --otoño-naranja: #d84315; --otoño-amarillo: #ffb300; --otoño-crema: #fff3e0; --otoño-verde: #558b2f; }
@@ -13,19 +13,20 @@
         .total-card { background: var(--otoño-oscuro); color: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
         .total-amount { font-size: 3rem; font-weight: 700; color: var(--otoño-amarillo); }
         
-        /* Panel de entrada de bono */
+        .header-btns { margin-bottom: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .btn-small { font-size: 0.7rem; padding: 5px 10px; border-radius: 5px; border: 1px solid var(--otoño-oscuro); cursor: pointer; background: white; }
+        .btn-reset { color: #d32f2f; border-color: #d32f2f; }
+
         .input-card { background: white; padding: 20px; border-radius: 20px; margin: 20px 0; border: 2px solid var(--otoño-naranja); text-align: center; }
         input[type="number"] { padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 120px; margin: 5px; }
         .btn-main { background: var(--otoño-naranja); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        /* Grid de Cuentas */
         .grid-cuentas { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .card-img { width: 100%; height: 120px; object-fit: cover; }
         .card-content { padding: 15px; text-align: center; }
         .monto { font-size: 2rem; font-weight: 700; margin: 10px 0; color: var(--otoño-naranja); }
         
-        /* Controles de ajuste */
         .ajuste-box { background: #fdf2f2; padding: 10px; border-radius: 12px; margin-top: 10px; }
         .btn-row { display: flex; justify-content: center; gap: 5px; margin-top: 5px; }
         .btn-min { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; color: white; font-size: 0.8rem; }
@@ -48,7 +49,10 @@
 <div class="container">
     <header>
         <h1>🍂 Mis Finanzas</h1>
-        <button onclick="cerrarSesion()" style="font-size: 0.7rem;">Cerrar Sesión (Borrar Token)</button>
+        <div class="header-btns">
+            <button class="btn-small" onclick="cerrarSesion()">Cerrar Sesión</button>
+            <button class="btn-small btn-reset" onclick="reiniciarTodo()">🔄 Reiniciar Todo a Q0</button>
+        </div>
         <div class="total-card">
             <small>SALDO TOTAL</small>
             <div id="total-general" class="total-amount">Q0.00</div>
@@ -56,11 +60,12 @@
     </header>
 
     <div class="input-card">
-        <h3>💰 Repartir Bono (Bono/Sueldo)</h3>
+        <h3>💰 Repartir Bono (Sueldo)</h3>
         <input type="number" id="bono-valor" placeholder="Q 0.00">
         <button class="btn-main" onclick="repartirBono()">Repartir %</button>
     </div>
 
+    <div id="status" style="text-align: center; font-size: 0.8rem; margin-bottom: 10px;"></div>
     <div class="grid-cuentas" id="grid"></div>
 </div>
 
@@ -78,20 +83,12 @@
 
     function guardarToken() {
         const val = document.getElementById('token-input').value;
-        if(val) {
-            localStorage.setItem('mi_finanza_token', val);
-            location.reload();
-        }
+        if(val) { localStorage.setItem('mi_finanza_token', val); location.reload(); }
     }
 
-    function cerrarSesion() {
-        localStorage.removeItem('mi_finanza_token');
-        location.reload();
-    }
+    function cerrarSesion() { localStorage.removeItem('mi_finanza_token'); location.reload(); }
 
-    if(!TOKEN) {
-        document.getElementById('login-screen').classList.remove('hidden');
-    }
+    if(!TOKEN) document.getElementById('login-screen').classList.remove('hidden');
 
     async function cargar() {
         if(!TOKEN) return;
@@ -115,7 +112,7 @@
                             <strong>${i.nombre} (${conf.p*100}%)</strong>
                             <div class="monto">Q${i.monto.toFixed(2)}</div>
                             <div class="ajuste-box">
-                                <input type="number" id="adj-${i.nombre}" placeholder="Cantidad" style="width: 80px;">
+                                <input type="number" id="adj-${i.nombre}" placeholder="Cantidad">
                                 <div class="btn-row">
                                     <button class="btn-min add" onclick="modificar('${i.nombre}', 1)">Añadir</button>
                                     <button class="btn-min sub" onclick="modificar('${i.nombre}', -1)">Quitar</button>
@@ -125,10 +122,12 @@
                     </div>`;
             });
             document.getElementById('total-general').innerText = `Q${total.toFixed(2)}`;
-        } catch(e) { console.error(e); }
+            document.getElementById('status').innerText = "✅ Sincronizado";
+        } catch(e) { document.getElementById('status').innerText = "❌ Error de conexión"; }
     }
 
     async function enviar(datos) {
+        document.getElementById('status').innerText = "⏳ Guardando...";
         await fetch(`https://api.github.com/gists/${GIST_ID}`, {
             method: 'PATCH',
             headers: { 'Authorization': `token ${TOKEN}` },
@@ -141,11 +140,9 @@
         const input = document.getElementById(`adj-${nombre}`);
         const valor = parseFloat(input.value);
         if(!valor || valor <= 0) return;
-
         const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
         const data = await res.json();
         let items = JSON.parse(data.files['finanzas.json'].content);
-
         items = items.map(i => i.nombre === nombre ? { ...i, monto: i.monto + (valor * signo) } : i);
         await enviar(items);
         input.value = '';
@@ -157,10 +154,16 @@
         const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
         const data = await res.json();
         let items = JSON.parse(data.files['finanzas.json'].content);
-
         items = items.map(i => ({ ...i, monto: i.monto + (valor * REGLA[i.nombre].p) }));
         await enviar(items);
         document.getElementById('bono-valor').value = '';
+    }
+
+    async function reiniciarTodo() {
+        if(confirm("⚠️ ¿Estás seguro de que quieres poner todas las cuentas en Q0.00? Esta acción no se puede deshacer.")) {
+            const items = Object.keys(REGLA).map(nombre => ({ nombre: nombre, monto: 0 }));
+            await enviar(items);
+        }
     }
 
     cargar();
