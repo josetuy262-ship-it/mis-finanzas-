@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gus: Bosque de Otoño 🍁 v11.2</title>
+    <title>Gus: Bosque de Otoño 🍁 v11.3</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { 
             --otoño-oscuro: #3e2723; --otoño-naranja: #d84315; --otoño-amarillo: #ffb300; 
-            --otoño-crema: #fff3e0; --otoño-verde: #558b2f; 
+            --otoño-crema: #fff3e0; --otoño-verde: #558b2f; --otoño-rojo: #bf360c;
         }
 
         body { 
@@ -54,20 +54,20 @@
         .card { background: white; border-radius: 25px; overflow: hidden; transition: 0.3s; border-bottom: 6px solid var(--otoño-naranja); display: flex; flex-direction: column; }
         .card img { width: 100%; height: 130px; object-fit: cover; cursor: pointer; }
         
-        /* Estilo del Historial en la tarjeta */
         .card-historial { background: rgba(0,0,0,0.03); padding: 10px; font-size: 0.75rem; border-top: 1px solid #eee; flex-grow: 1; }
         .hist-item { display: flex; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px dashed #ccc; padding-bottom: 2px; }
-        .hist-item:last-child { border-bottom: none; }
         .hist-add { color: var(--otoño-verde); font-weight: bold; }
         .hist-sub { color: #d32f2f; font-weight: bold; }
 
         .btn-main { 
             background: var(--otoño-naranja); color: white; border: none; 
-            padding: 18px 40px; border-radius: 50px; cursor: pointer; 
-            font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(216, 67, 21, 0.4);
+            padding: 15px 30px; border-radius: 50px; cursor: pointer; 
+            font-weight: bold; font-size: 1rem; box-shadow: 0 4px 15px rgba(216, 67, 21, 0.4);
+            margin: 5px;
         }
+        .btn-sub { background: var(--otoño-rojo); }
 
-        input[type="number"] { padding: 12px; border-radius: 12px; border: 2px solid #eee; width: 80px; font-size: 1rem; }
+        input[type="number"] { padding: 12px; border-radius: 12px; border: 2px solid #eee; width: 120px; font-size: 1rem; text-align: center; }
         .leaf { position: fixed; top: -50px; pointer-events: none; z-index: 1000; animation: fall linear forwards; font-size: 25px; }
         @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
     </style>
@@ -83,7 +83,7 @@
     <button class="btn-main" onclick="entrar()">ENTRAR AL BOSQUE</button>
 </div>
 
-<div id="gus-container" onclick="hablarGus('¡Mira el historial debajo de cada tarjeta!', 'happy')">
+<div id="gus-container" onclick="hablarGus('¡Hola Jose! ¿Hoy repartimos o retiramos?', 'happy')">
     <div id="gus-bubble"></div>
     <div class="squirrel" id="gus-sprite">🐿️</div>
 </div>
@@ -113,9 +113,12 @@
     </header>
 
     <div class="glass-card" style="text-align: center;">
-        <h3 style="margin-top:0">📥 Repartir Cosecha (Bono)</h3>
-        <input type="number" id="bono" placeholder="Q 0.00" style="width: 150px;">
-        <button class="btn-main" onclick="repartir()" style="padding: 12px 25px;">Repartir %</button>
+        <h3 style="margin-top:0">🚜 Gestión de Cosecha Grupal</h3>
+        <input type="number" id="bono" placeholder="Q 0.00">
+        <div style="margin-top: 10px;">
+            <button class="btn-main" onclick="gestionarBono(1)">➕ Repartir %</button>
+            <button class="btn-main btn-sub" onclick="gestionarBono(-1)">➖ Retirar %</button>
+        </div>
     </div>
 
     <div class="grid" id="grid"></div>
@@ -140,7 +143,7 @@
         document.getElementById('main').style.display = 'block';
         const iframe = document.getElementById('musica');
         iframe.src += "&autoplay=1";
-        hablarGus("¡Todo listo! Historiales activos debajo de cada tarjeta.");
+        hablarGus("¡Todo listo! Usa los botones centrales para mover el dinero en grupo.");
         cargar();
     }
 
@@ -148,7 +151,7 @@
         const bubble = document.getElementById('gus-bubble');
         const sprite = document.getElementById('gus-sprite');
         if(anim === 'happy') sprite.classList.add('jump');
-        if(anim === 'sad') sprite.style.transform = "scale(0.7)";
+        if(anim === 'sad') sprite.style.transform = "scale(0.7) rotate(-10deg)";
         bubble.innerText = texto;
         bubble.style.display = 'block';
         setTimeout(() => { 
@@ -169,48 +172,55 @@
         items.forEach(i => {
             total += i.monto;
             const histLocal = (JSON.parse(localStorage.getItem('hist_v11')) || []).filter(h => h.cuenta === i.nombre).slice(0, 2);
-            
             grid.innerHTML += `
                 <div class="card">
-                    <img src="${REGLA[i.nombre].img}" onclick="darConsejo('${i.nombre}')">
+                    <img src="${REGLA[i.nombre].img}" onclick="hablarGus('¡Gus cuida esta cuenta!', 'happy')">
                     <div style="padding:15px; text-align:center;">
-                        <strong>${i.nombre}</strong>
+                        <strong>${i.nombre} (${REGLA[i.nombre].p*100}%)</strong>
                         <div style="font-size:1.8rem; font-weight:800; color:var(--otoño-naranja)">Q${i.monto.toFixed(2)}</div>
                         <div style="margin-top:10px">
-                            <input type="number" id="in-${i.nombre}" placeholder="Q">
+                            <input type="number" id="in-${i.nombre}" placeholder="Q" style="width:70px">
                             <button onclick="modificar('${i.nombre}', 1)" style="background:var(--otoño-verde); color:white; border:none; padding:8px; border-radius:8px; cursor:pointer">+</button>
                             <button onclick="modificar('${i.nombre}', -1)" style="background:#d32f2f; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer">-</button>
                         </div>
                     </div>
-                    <div class="card-historial">
-                        ${histLocal.length ? histLocal.map(h => `
-                            <div class="hist-item">
-                                <span class="${h.tipo === 'add' ? 'hist-add' : 'hist-sub'}">${h.tipo === 'add' ? '↑' : '↓'} Q${h.monto}</span>
-                                <span style="color:#999; font-size:0.6rem;">${h.fecha}</span>
-                            </div>
-                        `).join('') : '<div style="color:#bbb; text-align:center">Sin movimientos</div>'}
-                    </div>
+                    <div class="card-historial">${histLocal.map(h => `<div class="hist-item"><span class="${h.tipo==='add'?'hist-add':'hist-sub'}">${h.tipo==='add'?'↑':'↓'} Q${h.monto}</span><span style="font-size:0.6rem; color:#999">${h.fecha}</span></div>`).join('') || 'Sin movimientos'}</div>
                 </div>`;
         });
         document.getElementById('total-val').innerText = `Q${total.toFixed(2)}`;
         actualizarMeta(items.find(x => x.nombre === "Ahorro").monto);
     }
 
-    function registrarHistorial(cuenta, monto, tipo) {
-        let hist = JSON.parse(localStorage.getItem('hist_v11')) || [];
-        const ahora = new Date();
-        const fecha = ahora.toLocaleDateString() + " " + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        hist.unshift({ cuenta, monto: parseFloat(monto).toFixed(2), tipo, fecha });
-        localStorage.setItem('hist_v11', JSON.stringify(hist.slice(0, 50)));
+    async function gestionarBono(signo) {
+        const val = parseFloat(document.getElementById('bono').value);
+        if(!val) return;
+        
+        if(signo > 0) {
+            hablarGus(`¡Cosecha abundante! Repartiendo Q${val}...`, 'happy');
+            lanzarHojas();
+        } else {
+            hablarGus(`Ouch, retirando Q${val} del nido proporcionalmente...`, 'sad');
+        }
+
+        const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
+        const data = await res.json();
+        let items = JSON.parse(data.files['finanzas.json'].content);
+        
+        items = items.map(i => {
+            const m = (val * REGLA[i.nombre].p);
+            registrarHistorial(i.nombre, m, signo > 0 ? 'add' : 'sub');
+            return { ...i, monto: i.monto + (m * signo) };
+        });
+
+        document.getElementById('bono').value = '';
+        await enviar(items);
     }
 
     async function modificar(nombre, signo) {
         const val = parseFloat(document.getElementById(`in-${nombre}`).value);
         if(!val) return;
-        
         registrarHistorial(nombre, val, signo > 0 ? 'add' : 'sub');
-        hablarGus(signo > 0 ? `¡Nueces guardadas! +Q${val}` : `Usamos Q${val} de ${nombre}`, signo > 0 ? 'happy' : 'sad');
-        
+        hablarGus(signo > 0 ? `+Q${val} para ${nombre}` : `-Q${val} de ${nombre}`, signo > 0 ? 'happy' : 'sad');
         const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
         const data = await res.json();
         let items = JSON.parse(data.files['finanzas.json'].content);
@@ -218,30 +228,12 @@
         await enviar(items);
     }
 
-    async function repartir() {
-        const val = parseFloat(document.getElementById('bono').value);
-        if(!val) return;
-        
-        Object.keys(REGLA).forEach(key => {
-            registrarHistorial(key, (val * REGLA[key].p), 'add');
-        });
-
-        hablarGus("¡Cosecha repartida en todas las cuentas!", 'happy');
-        const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
-        const data = await res.json();
-        let items = JSON.parse(data.files['finanzas.json'].content);
-        items = items.map(i => ({ ...i, monto: i.monto + (val * REGLA[i.nombre].p) }));
-        document.getElementById('bono').value = '';
-        lanzarHojas();
-        await enviar(items);
-    }
-
-    async function reiniciarTodo() {
-        if(confirm("¿Poner todo en cero? Se borrará el historial.")) {
-            localStorage.removeItem('hist_v11');
-            const items = Object.keys(REGLA).map(nombre => ({ nombre, monto: 0 }));
-            await enviar(items);
-        }
+    function registrarHistorial(cuenta, monto, tipo) {
+        let hist = JSON.parse(localStorage.getItem('hist_v11')) || [];
+        const ahora = new Date();
+        const fecha = ahora.getHours() + ":" + ahora.getMinutes().toString().padStart(2, '0');
+        hist.unshift({ cuenta, monto: parseFloat(monto).toFixed(2), tipo, fecha });
+        localStorage.setItem('hist_v11', JSON.stringify(hist.slice(0, 50)));
     }
 
     async function enviar(datos) {
@@ -251,11 +243,6 @@
             body: JSON.stringify({ files: { "finanzas.json": { content: JSON.stringify(datos, null, 2) } } })
         });
         cargar();
-    }
-
-    function darConsejo(cuenta) {
-        const frases = ["¡Buena elección!", "Gus aprueba esto.", "Sigue así, Jose.", "El nido está seguro."];
-        hablarGus(frases[Math.floor(Math.random()*frases.length)], 'happy');
     }
 
     function lanzarHojas() {
@@ -280,6 +267,14 @@
         const perc = Math.min((ahorro / meta) * 100, 100);
         document.getElementById('fill').style.width = perc + "%";
         document.getElementById('perc-txt').innerText = perc.toFixed(1) + "% completado";
+    }
+
+    async function reiniciarTodo() {
+        if(confirm("¿Poner todo en cero?")) {
+            localStorage.removeItem('hist_v11');
+            const items = Object.keys(REGLA).map(nombre => ({ nombre, monto: 0 }));
+            await enviar(items);
+        }
     }
 
     function cerrarSesion() { localStorage.clear(); location.reload(); }
