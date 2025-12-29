@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gus: Bosque de Otoño 🍁 v11.1</title>
+    <title>Gus: Bosque de Otoño 🍁 v11.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -27,7 +27,7 @@
 
         #splash { position: fixed; inset: 0; background: var(--otoño-oscuro); z-index: 9000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; transition: 0.8s; }
 
-        #gus-container { position: fixed; bottom: 30px; right: 30px; z-index: 5000; cursor: pointer; transition: 0.5s; }
+        #gus-container { position: fixed; bottom: 30px; right: 30px; z-index: 5000; cursor: pointer; }
         .squirrel { font-size: 80px; display: inline-block; animation: idle 3s ease-in-out infinite; transition: 0.5s; }
         @keyframes idle { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-10px) rotate(5deg); } }
         .jump { animation: jump 0.6s ease !important; }
@@ -36,7 +36,7 @@
         #gus-bubble { 
             position: absolute; bottom: 100px; right: 0; width: 220px; background: white; 
             padding: 15px; border-radius: 20px; border: 3px solid var(--otoño-naranja);
-            display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-weight: 600;
+            display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-weight: 600; z-index: 5001;
         }
 
         .container { max-width: 900px; margin: 0 auto; display: none; }
@@ -46,14 +46,21 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.3);
         }
 
-        .total-amount { font-size: 3.5rem; font-weight: 800; color: var(--otoño-naranja); text-shadow: 2px 2px 0px white; }
+        .total-amount { font-size: 3.5rem; font-weight: 800; color: var(--otoño-naranja); text-shadow: 2px 2px 0px white; text-align: center;}
         .progress-bar { width: 100%; height: 20px; background: #ddd; border-radius: 10px; overflow: hidden; margin: 10px 0; border: 2px solid white; }
         .progress-fill { height: 100%; background: var(--otoño-verde); width: 0%; transition: 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: white; border-radius: 25px; overflow: hidden; transition: 0.3s; border-bottom: 6px solid var(--otoño-naranja); }
+        .card { background: white; border-radius: 25px; overflow: hidden; transition: 0.3s; border-bottom: 6px solid var(--otoño-naranja); display: flex; flex-direction: column; }
         .card img { width: 100%; height: 130px; object-fit: cover; cursor: pointer; }
         
+        /* Estilo del Historial en la tarjeta */
+        .card-historial { background: rgba(0,0,0,0.03); padding: 10px; font-size: 0.75rem; border-top: 1px solid #eee; flex-grow: 1; }
+        .hist-item { display: flex; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px dashed #ccc; padding-bottom: 2px; }
+        .hist-item:last-child { border-bottom: none; }
+        .hist-add { color: var(--otoño-verde); font-weight: bold; }
+        .hist-sub { color: #d32f2f; font-weight: bold; }
+
         .btn-main { 
             background: var(--otoño-naranja); color: white; border: none; 
             padding: 18px 40px; border-radius: 50px; cursor: pointer; 
@@ -76,13 +83,13 @@
     <button class="btn-main" onclick="entrar()">ENTRAR AL BOSQUE</button>
 </div>
 
-<div id="gus-container" onclick="hablarGus('¡Hola Jose! Revisa tus cuentas conmigo.')">
+<div id="gus-container" onclick="hablarGus('¡Mira el historial debajo de cada tarjeta!', 'happy')">
     <div id="gus-bubble"></div>
     <div class="squirrel" id="gus-sprite">🐿️</div>
 </div>
 
 <div class="container" id="main">
-    <header class="glass-card" style="text-align: center;">
+    <header class="glass-card">
         <iframe id="musica" width="1" height="1" src="https://www.youtube.com/embed/h_r7EIuQj-s?enablejsapi=1&loop=1&playlist=h_r7EIuQj-s" frameborder="0" allow="autoplay" style="display:none"></iframe>
         
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -93,8 +100,10 @@
             </div>
         </div>
         
-        <small style="letter-spacing: 2px; font-weight: bold;">DISPONIBLE TOTAL</small>
-        <div id="total-val" class="total-amount">Q0.00</div>
+        <div style="text-align:center">
+            <small style="letter-spacing: 2px; font-weight: bold;">DISPONIBLE TOTAL</small>
+            <div id="total-val" class="total-amount">Q0.00</div>
+        </div>
 
         <div style="margin-top: 15px;">
             <strong>Meta: <span id="meta-txt">Q0</span></strong>
@@ -125,34 +134,23 @@
         "Inversión": { p: 0.15, img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400" }
     };
 
-    const CONSEJOS = {
-        "Comida": ["Cocinar en casa es un superpoder financiero.", "Gus dice: esa fruta de temporada se ve deliciosa.", "¿Delivery hoy? Mejor ahorremos para una cena especial luego."],
-        "Ahorro": ["¡Mis nueces están creciendo! Gracias Jose.", "Cada moneda guardada es un paso a la libertad.", "Gus duerme tranquilo cuando el ahorro sube."],
-        "Inversión": ["Sembrando hoy, cosechando mañana.", "¡Haz que tu dinero trabaje tan duro como una ardilla!", "La paciencia en la inversión es la mejor virtud."],
-        "Necesidades": ["Lo básico está listo. ¡Gran organización!", "Gastos bajo control, vida en paz.", "Priorizar es saber vivir bien."],
-        "Transporte": ["¿Podemos ir caminando? ¡Es gratis y saludable!", "Planifica tus viajes para gastar menos energía.", "Gus dice: el transporte eficiente es inteligente."]
-    };
-
     function entrar() {
         document.getElementById('splash').style.opacity = '0';
         setTimeout(() => document.getElementById('splash').style.display = 'none', 800);
         document.getElementById('main').style.display = 'block';
         const iframe = document.getElementById('musica');
         iframe.src += "&autoplay=1";
-        hablarGus("¡Ya estamos aquí! Música lista y ambiente activado.");
+        hablarGus("¡Todo listo! Historiales activos debajo de cada tarjeta.");
         cargar();
     }
 
     function hablarGus(texto, anim = 'normal') {
         const bubble = document.getElementById('gus-bubble');
         const sprite = document.getElementById('gus-sprite');
-        
         if(anim === 'happy') sprite.classList.add('jump');
         if(anim === 'sad') sprite.style.transform = "scale(0.7)";
-        
         bubble.innerText = texto;
         bubble.style.display = 'block';
-        
         setTimeout(() => { 
             bubble.style.display = 'none'; 
             sprite.classList.remove('jump');
@@ -170,17 +168,27 @@
 
         items.forEach(i => {
             total += i.monto;
+            const histLocal = (JSON.parse(localStorage.getItem('hist_v11')) || []).filter(h => h.cuenta === i.nombre).slice(0, 2);
+            
             grid.innerHTML += `
-                <div class="card glass-card">
+                <div class="card">
                     <img src="${REGLA[i.nombre].img}" onclick="darConsejo('${i.nombre}')">
                     <div style="padding:15px; text-align:center;">
                         <strong>${i.nombre}</strong>
-                        <div style="font-size:2rem; font-weight:800; color:var(--otoño-naranja)">Q${i.monto.toFixed(2)}</div>
+                        <div style="font-size:1.8rem; font-weight:800; color:var(--otoño-naranja)">Q${i.monto.toFixed(2)}</div>
                         <div style="margin-top:10px">
                             <input type="number" id="in-${i.nombre}" placeholder="Q">
-                            <button onclick="modificar('${i.nombre}', 1)" style="background:var(--otoño-verde); color:white; border:none; padding:10px; border-radius:10px; cursor:pointer">+</button>
-                            <button onclick="modificar('${i.nombre}', -1)" style="background:#d32f2f; color:white; border:none; padding:10px; border-radius:10px; cursor:pointer">-</button>
+                            <button onclick="modificar('${i.nombre}', 1)" style="background:var(--otoño-verde); color:white; border:none; padding:8px; border-radius:8px; cursor:pointer">+</button>
+                            <button onclick="modificar('${i.nombre}', -1)" style="background:#d32f2f; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer">-</button>
                         </div>
+                    </div>
+                    <div class="card-historial">
+                        ${histLocal.length ? histLocal.map(h => `
+                            <div class="hist-item">
+                                <span class="${h.tipo === 'add' ? 'hist-add' : 'hist-sub'}">${h.tipo === 'add' ? '↑' : '↓'} Q${h.monto}</span>
+                                <span style="color:#999; font-size:0.6rem;">${h.fecha}</span>
+                            </div>
+                        `).join('') : '<div style="color:#bbb; text-align:center">Sin movimientos</div>'}
                     </div>
                 </div>`;
         });
@@ -188,15 +196,21 @@
         actualizarMeta(items.find(x => x.nombre === "Ahorro").monto);
     }
 
-    function darConsejo(cuenta) {
-        const lista = CONSEJOS[cuenta];
-        hablarGus(lista[Math.floor(Math.random() * lista.length)], 'happy');
+    function registrarHistorial(cuenta, monto, tipo) {
+        let hist = JSON.parse(localStorage.getItem('hist_v11')) || [];
+        const ahora = new Date();
+        const fecha = ahora.toLocaleDateString() + " " + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        hist.unshift({ cuenta, monto: parseFloat(monto).toFixed(2), tipo, fecha });
+        localStorage.setItem('hist_v11', JSON.stringify(hist.slice(0, 50)));
     }
 
     async function modificar(nombre, signo) {
         const val = parseFloat(document.getElementById(`in-${nombre}`).value);
         if(!val) return;
-        hablarGus(signo > 0 ? `¡Nueces extra! +Q${val}` : `Usamos Q${val}, ¡ojo con el nido!`, signo > 0 ? 'happy' : 'sad');
+        
+        registrarHistorial(nombre, val, signo > 0 ? 'add' : 'sub');
+        hablarGus(signo > 0 ? `¡Nueces guardadas! +Q${val}` : `Usamos Q${val} de ${nombre}`, signo > 0 ? 'happy' : 'sad');
+        
         const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
         const data = await res.json();
         let items = JSON.parse(data.files['finanzas.json'].content);
@@ -207,7 +221,12 @@
     async function repartir() {
         const val = parseFloat(document.getElementById('bono').value);
         if(!val) return;
-        hablarGus("¡Cosecha abundante! Repartiendo...", 'happy');
+        
+        Object.keys(REGLA).forEach(key => {
+            registrarHistorial(key, (val * REGLA[key].p), 'add');
+        });
+
+        hablarGus("¡Cosecha repartida en todas las cuentas!", 'happy');
         const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
         const data = await res.json();
         let items = JSON.parse(data.files['finanzas.json'].content);
@@ -217,10 +236,9 @@
         await enviar(items);
     }
 
-    // --- FUNCIÓN REINICIAR RECUPERADA ---
     async function reiniciarTodo() {
-        if(confirm("⚠️ ¿Estás seguro de poner todo en Q0.00? Gus se pondrá muy triste.")) {
-            hablarGus("Empezamos de cero... ¡confío en ti!", 'sad');
+        if(confirm("¿Poner todo en cero? Se borrará el historial.")) {
+            localStorage.removeItem('hist_v11');
             const items = Object.keys(REGLA).map(nombre => ({ nombre, monto: 0 }));
             await enviar(items);
         }
@@ -235,8 +253,13 @@
         cargar();
     }
 
+    function darConsejo(cuenta) {
+        const frases = ["¡Buena elección!", "Gus aprueba esto.", "Sigue así, Jose.", "El nido está seguro."];
+        hablarGus(frases[Math.floor(Math.random()*frases.length)], 'happy');
+    }
+
     function lanzarHojas() {
-        for(let i=0; i<30; i++) {
+        for(let i=0; i<20; i++) {
             const leaf = document.createElement('div');
             leaf.className = 'leaf'; leaf.innerText = '🍁';
             leaf.style.left = Math.random() * 100 + "vw";
@@ -247,7 +270,7 @@
     }
 
     function abrirMeta() {
-        const m = prompt("¿Cuál es tu nueva meta de ahorro?");
+        const m = prompt("Nueva meta de ahorro:");
         if(m) { localStorage.setItem('meta_v11', m); cargar(); }
     }
 
@@ -256,7 +279,7 @@
         document.getElementById('meta-txt').innerText = "Q" + meta;
         const perc = Math.min((ahorro / meta) * 100, 100);
         document.getElementById('fill').style.width = perc + "%";
-        document.getElementById('perc-txt').innerText = perc.toFixed(1) + "% alcanzado";
+        document.getElementById('perc-txt').innerText = perc.toFixed(1) + "% completado";
     }
 
     function cerrarSesion() { localStorage.clear(); location.reload(); }
