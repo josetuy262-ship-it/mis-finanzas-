@@ -2,101 +2,250 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gus: Conector Bancario GT v12.4</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gus 3D Pro: Bosque v12.5 🌳</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* INTERFAZ CLÁSICA QUE YA TENÍAS */
-        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-        .header { background: #2c3e50; color: white; padding: 20px; border-radius: 10px; text-align: center; }
-        .main-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 20px; }
-        
-        /* NUEVA FUNCIÓN DE BANCOS */
-        .bank-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 15px; }
-        .bank-card { 
-            padding: 15px; border: 2px solid #3498db; border-radius: 10px; text-align: center; 
-            cursor: pointer; font-weight: bold; transition: 0.3s; background: #fff;
+        :root { --naranja: #d84315; --verde: #558b2f; --glass: rgba(255, 255, 255, 0.15); }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; margin: 0; min-height: 100vh;
+            background: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920') no-repeat center fixed;
+            background-size: cover; overflow-x: hidden;
         }
-        .bank-card:hover { background: #3498db; color: white; }
-        
-        /* EL GUS 3D DE TU FOTO */
-        #gus-3d {
-            position: fixed; bottom: 20px; right: 20px; width: 100px; height: 120px;
-            cursor: pointer; z-index: 1000; transition: transform 0.5s;
+
+        /* --- GUS SOFT 3D REAL --- */
+        #gus-container { position: fixed; z-index: 9999; cursor: pointer; transition: all 2s ease; left: 80%; top: 70%; }
+        .gus-body {
+            width: 100px; height: 100px;
+            background: #e67e22; border-radius: 50% 50% 40% 40%;
+            position: relative; box-shadow: inset -10px -10px 20px rgba(0,0,0,0.3), 0 20px 30px rgba(0,0,0,0.4);
+            animation: breathe 3s infinite ease-in-out;
         }
-        .gus-body { width: 80px; height: 90px; background: #f39c12; border-radius: 40%; position: relative; box-shadow: inset -5px -5px 10px rgba(0,0,0,0.3); }
-        .gus-ear { position: absolute; width: 20px; height: 30px; background: #e67e22; top: -10px; border-radius: 50% 50% 0 0; }
-        .gus-eye { position: absolute; background: #000; width: 8px; height: 8px; border-radius: 50%; top: 30%; border: 1px solid white; }
-        
-        #gus-msg { 
-            position: fixed; bottom: 150px; right: 20px; background: white; 
-            padding: 10px; border-radius: 10px; border: 2px solid #f39c12; 
-            max-width: 200px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        .gus-eye { position: absolute; background: #2c3e50; width: 12px; height: 12px; border-radius: 50%; top: 35%; border: 2px solid white; }
+        .eye-l { left: 25%; } .eye-r { right: 25%; }
+        .gus-tail { 
+            position: absolute; right: -40px; top: 10px; width: 50px; height: 60px; 
+            background: #d35400; border-radius: 50% 50% 0 50%; transform: rotate(20deg);
+            box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2);
         }
+        @keyframes breathe { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.05) translateY(-10px); } }
+
+        #gus-bubble { 
+            position: absolute; bottom: 120px; right: -50px; width: 220px; padding: 15px; 
+            background: white; border-radius: 20px; display: none; font-weight: bold; font-size: 13px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-left: 5px solid var(--naranja); color: #333;
+        }
+
+        /* --- UI GLASSMORPHISM --- */
+        .glass { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 30px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { padding: 20px; text-align: center; color: white; position: relative; }
+        
+        .progress-bar { width: 100%; height: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; margin: 10px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: #4caf50; width: 0%; transition: 1.5s; }
+
+        .btn-menu { position: fixed; top: 20px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.6); border: none; color: white; padding: 12px; border-radius: 50%; cursor: pointer; font-size: 20px; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10001; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; width: 100%; max-width: 550px; border-radius: 30px; padding: 30px; max-height: 85vh; overflow-y: auto; }
+        
+        .audit-btn { background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 10px; cursor: pointer; font-size: 11px; margin-top: 5px; }
+        .btn-menu-opt { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 15px; border: 1px solid #ddd; background: white; cursor: pointer; font-weight: bold; text-align: left; }
+        .bank-link { display: block; padding: 10px; margin: 5px 0; background: #e8f4fd; border-radius: 10px; text-decoration: none; color: #004b8d; font-weight: bold; border-left: 4px solid #004b8d; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>Portal de Ahorro Jose</h1>
-    <p>Conexión Directa con Bancos de Guatemala</p>
-</div>
+<button class="btn-menu" onclick="abrirMenuPrincipal()">⋮</button>
 
-<div class="main-card">
-    <h3>🏦 Selecciona tu banco para conectar:</h3>
-    <div class="bank-grid">
-        <div class="bank-card" onclick="irABanco('Banco Industrial', 'https://www.bi.com.gt')">Banco Industrial</div>
-        <div class="bank-card" onclick="irABanco('Banrural', 'https://www.banrural.com.gt')">Banrural</div>
-        <div class="bank-card" onclick="irABanco('BAC', 'https://www.baccredomatic.com/es-gt')">BAC Credomatic</div>
-        <div class="bank-card" onclick="irABanco('G&T', 'https://www.gtc.com.gt')">G&T Continental</div>
-    </div>
-    
-    <div id="status-area" style="margin-top:20px; padding:15px; border-radius:8px; display:none; background:#e8f4fd;">
-        <strong id="bank-name"></strong>
-        <p id="bank-info">Conectando con la sucursal virtual...</p>
-        <button id="btn-acceso" style="padding:10px; background:#27ae60; color:white; border:none; border-radius:5px; cursor:pointer;">Entrar al Sitio Oficial</button>
-    </div>
-</div>
-
-<div id="gus-msg"></div>
-<div id="gus-3d" onclick="gusHabla()">
+<div id="gus-container" onclick="hablarGus('¡Hola Jose! ¿Analizamos las bellotas?', 4000)">
+    <div id="gus-bubble"></div>
     <div class="gus-body">
-        <div class="gus-ear" style="left:10px;"></div>
-        <div class="gus-ear" style="right:10px;"></div>
-        <div class="gus-eye" style="left:20px;"></div>
-        <div class="gus-eye" style="right:20px;"></div>
+        <div class="gus-eye eye-l"></div>
+        <div class="gus-eye eye-r"></div>
+        <div class="gus-tail"></div>
+    </div>
+</div>
+
+<div class="container" id="main">
+    <header class="glass" style="padding: 30px; margin-bottom: 25px; text-align: center; color: white;">
+        <button onclick="abrirMeta()" style="float: right; background: white; color: black; border: none; padding: 5px 15px; border-radius: 10px; font-weight: bold; cursor: pointer;">🎯 Meta</button>
+        <div style="font-size: 0.9rem; opacity: 0.8;">BALANCE TOTAL</div>
+        <div style="font-size: 3.5rem; font-weight: 800; margin: 10px 0;" id="total-val">Q0.00</div>
+        <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+        <small id="perc-txt">0% de tu ahorro alcanzado</small>
+    </header>
+    <div class="grid" id="grid"></div>
+</div>
+
+<div id="modal-master" class="modal" onclick="cerrarModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h2 id="modal-titulo" style="color: var(--naranja)">Opciones</h2>
+        <div id="modal-body"></div>
+        <button onclick="cerrarModal()" style="width:100%; margin-top:20px; padding:12px; border-radius:15px; background:#eee; border:none; font-weight:bold; cursor:pointer">Cerrar</button>
     </div>
 </div>
 
 <script>
-    function irABanco(nombre, url) {
-        document.getElementById('status-area').style.display = 'block';
-        document.getElementById('bank-name').innerText = "📍 Conectado a: " + nombre;
+    const GIST_ID = 'dcb2ffeb425b761c097e6f435d434a35';
+    let TOKEN = localStorage.getItem('mi_finanza_token') || prompt("Token de GitHub:");
+    if(TOKEN) localStorage.setItem('mi_finanza_token', TOKEN);
+
+    const REGLA = {
+        "Necesidades": { p: 0.50, img: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=200" },
+        "Comida": { p: 0.10, img: "https://images.unsplash.com/photo-1505935428862-770b6f24f629?w=200" },
+        "Transporte": { p: 0.10, img: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=200" },
+        "Ahorro": { p: 0.15, img: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=200" },
+        "Inversión": { p: 0.15, img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=200" }
+    };
+
+    let itemsGlobal = [];
+
+    async function cargar() {
+        const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
+        const data = await res.json();
+        itemsGlobal = JSON.parse(data.files['finanzas.json'].content);
         
-        const btn = document.getElementById('btn-acceso');
-        btn.onclick = function() { window.open(url, '_blank'); };
-        
-        let consejo = "";
-        if(nombre === 'Banco Industrial') {
-            consejo = "En el BI busca la tarjeta Visa Gold, ¡tiene los mejores puntos!";
-        } else if(nombre === 'Banrural') {
-            consejo = "Banrural tiene excelentes promociones para el Mundial 2026.";
+        let total = 0, ahorro = 0;
+        const grid = document.getElementById('grid');
+        grid.innerHTML = '';
+
+        itemsGlobal.forEach((i, idx) => {
+            total += i.monto;
+            if(i.nombre === "Ahorro") ahorro = i.monto;
+            grid.innerHTML += `
+                <div class="card glass">
+                    <div onclick="verHistorial('${i.nombre}')" style="position:absolute; top:10px; right:10px; cursor:pointer">📖</div>
+                    <img src="${REGLA[i.nombre].img}" style="width:70px; height:70px; border-radius:50%; object-fit:cover; margin-bottom:10px; border:2px solid white">
+                    <h3 style="margin:0">${i.nombre}</h3>
+                    <div style="font-size:1.8rem; font-weight:800; color:#ffeb3b">Q${i.monto.toFixed(2)}</div>
+                    <div style="margin-top:10px">
+                        <input type="number" id="in-${i.nombre}" placeholder="Q" style="width:60px; border-radius:5px; border:none; padding:5px">
+                        <button onclick="modificar('${i.nombre}', 1)" style="background:var(--verde); color:white; border:none; border-radius:5px; padding:5px 10px; cursor:pointer">+</button>
+                        <button onclick="modificar('${i.nombre}', -1)" style="background:#c62828; color:white; border:none; border-radius:5px; padding:5px 10px; cursor:pointer">-</button>
+                    </div>
+                    <button class="audit-btn" onclick="abrirAuditoria('${i.nombre}', ${i.monto})">🔍 ¿No cuadra físico?</button>
+                </div>`;
+        });
+        document.getElementById('total-val').innerText = `Q${total.toFixed(2)}`;
+        actualizarMeta(ahorro);
+    }
+
+    // --- NUEVA FUNCIÓN DE BANCOS GUATEMALA ---
+    function abrirAsesorBancario() {
+        document.getElementById('modal-titulo').innerText = "Bancos de Guatemala - Asesor Gus";
+        document.getElementById('modal-body').innerHTML = `
+            <p>Selecciona un banco para ver sus beneficios (Acceso Seguro):</p>
+            <a href="https://www.bi.com.gt" target="_blank" class="bank-link" onclick="hablarGus('Excelente elección. El BI tiene la tarjeta que buscabas.', 5000)">🏦 Banco Industrial (BI)</a>
+            <a href="https://www.banrural.com.gt" target="_blank" class="bank-link" onclick="hablarGus('Banrural es genial para ahorros pequeños.', 5000)">🏦 Banrural</a>
+            <a href="https://www.baccredomatic.com/es-gt" target="_blank" class="bank-link" onclick="hablarGus('BAC tiene buenos puntos por compras.', 5000)">🏦 BAC Credomatic</a>
+            <hr>
+            <input type="text" id="busquedaBanco" placeholder="¿Qué buscas? Ej: Tarjeta de crédito" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ddd; margin-top:10px">
+            <button onclick="consultarGusBanco()" style="width:100%; margin-top:10px; background:var(--verde); color:white; border:none; padding:10px; border-radius:10px; cursor:pointer">Consultar a Gus</button>
+            <div id="resultadoBanco" style="margin-top:15px; font-size:14px; color:#333"></div>
+        `;
+    }
+
+    function consultarGusBanco() {
+        const q = document.getElementById('busquedaBanco').value.toLowerCase();
+        let res = "";
+        if(q.includes("tarjeta")) {
+            res = `<div style="background:#fff3e0; padding:10px; border-left:4px solid orange">🐿️ <b>Gus dice:</b> Jose, para tu nivel de ahorro, la <b>Tarjeta BI Visa</b> es la mejor opción. Te da puntos y tiene buena aceptación en Guate.</div>`;
         } else {
-            consejo = "Recuerda comparar las tasas de interés antes de abrir una cuenta.";
+            res = "Gus sugiere revisar las Cuentas de Ahorro Programado del BI para llegar más rápido a tu meta.";
         }
-        
-        mostrarGus(consejo);
+        document.getElementById('resultadoBanco').innerHTML = res;
     }
 
-    function mostrarGus(msj) {
-        const caja = document.getElementById('gus-msg');
-        caja.innerText = "🐿️ Gus dice: " + msj;
-        caja.style.display = 'block';
-        setTimeout(() => { caja.style.display = 'none'; }, 6000);
+    // --- MANTENIENDO EL RESTO DEL CÓDIGO IGUAL ---
+    function abrirMenuPrincipal() {
+        document.getElementById('modal-titulo').innerText = "Menú Principal";
+        document.getElementById('modal-body').innerHTML = `
+            <button class="btn-menu-opt" onclick="abrirMeta()">🎯 Ajustar Meta</button>
+            <button class="btn-menu-opt" onclick="abrirAsesorBancario()">🏦 Bancos de Guatemala</button>
+            <button class="btn-menu-opt" onclick="reiniciarTodo()" style="color:red">🔄 Reset Bosque</button>
+        `;
+        document.getElementById('modal-master').style.display = 'flex';
     }
 
-    function gusHabla() {
-        mostrarGus("¡Hola Jose! Estoy listo para ayudarte con tus trámites bancarios.");
+    function abrirAuditoria(nombre, montoDigital) {
+        document.getElementById('modal-titulo').innerText = "Ajuste de Caja: " + nombre;
+        document.getElementById('modal-body').innerHTML = `
+            <p>Gus dice: "Jose, cuéntame cuánto tienes físicamente ahora mismo."</p>
+            <input type="number" id="montoFisico" placeholder="Cantidad real Q" style="width:100%; padding:15px; border-radius:10px; border:1px solid #ddd; font-size:1.2rem">
+            <button onclick="procesarAjuste('${nombre}', ${montoDigital})" style="width:100%; margin-top:15px; background:var(--naranja); color:white; border:none; padding:15px; border-radius:10px; font-weight:bold; cursor:pointer">Analizar y Ajustar</button>
+        `;
+        document.getElementById('modal-master').style.display = 'flex';
     }
+
+    async function procesarAjuste(nombre, digital) {
+        const fisico = parseFloat(document.getElementById('montoFisico').value);
+        if(isNaN(fisico)) return;
+        const dif = fisico - digital;
+        itemsGlobal = itemsGlobal.map(i => i.nombre === nombre ? {...i, monto: fisico} : i);
+        registrarHistorial(nombre, Math.abs(dif), dif > 0 ? 'add' : 'sub', "Ajuste por descuadre físico");
+        await enviar(itemsGlobal);
+        hablarGus(`Ajuste completado. ${dif > 0 ? 'Encontramos' : 'Gastaste'} Q${Math.abs(dif).toFixed(2)} que no anotamos.`, 6000);
+        cerrarModal();
+    }
+
+    async function modificar(nombre, signo) {
+        const val = parseFloat(document.getElementById(`in-${nombre}`).value);
+        if(!val) return;
+        itemsGlobal = itemsGlobal.map(i => i.nombre === nombre ? {...i, monto: i.monto + (val * signo)} : i);
+        registrarHistorial(nombre, val, signo > 0 ? 'add' : 'sub');
+        await enviar(itemsGlobal);
+    }
+
+    async function enviar(datos) {
+        await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+            method: 'PATCH',
+            headers: { 'Authorization': `token ${TOKEN}` },
+            body: JSON.stringify({ files: { "finanzas.json": { content: JSON.stringify(datos, null, 2) } } })
+        });
+        cargar();
+    }
+
+    function registrarHistorial(cuenta, monto, tipo, nota = "") {
+        let hist = JSON.parse(localStorage.getItem('hist_v12')) || [];
+        hist.unshift({ cuenta, monto, tipo, nota, fecha: new Date().toLocaleString() });
+        localStorage.setItem('hist_v12', JSON.stringify(hist.slice(0, 50)));
+    }
+
+    function verHistorial(nombre) {
+        const hist = JSON.parse(localStorage.getItem('hist_v12')) || [];
+        const filtrado = hist.filter(h => h.cuenta === nombre);
+        document.getElementById('modal-titulo').innerText = "Historial: " + nombre;
+        document.getElementById('modal-body').innerHTML = filtrado.length ? filtrado.map(h => `<div style="border-bottom:1px solid #eee; padding:10px">
+            <small>${h.fecha}</small><br><b>${h.tipo === 'add' ? '+' : '-'} Q${h.monto}</b> - ${h.nota || 'Movimiento manual'}
+        </div>`).join('') : "No hay registros aún.";
+        document.getElementById('modal-master').style.display = 'flex';
+    }
+
+    function actualizarMeta(ahorro) {
+        let m = parseFloat(localStorage.getItem('meta_v12')) || 1000;
+        let p = Math.min((ahorro / m) * 100, 100);
+        document.getElementById('fill').style.width = p + "%";
+        document.getElementById('perc-txt').innerText = `${p.toFixed(1)}% de Q${m}`;
+    }
+
+    function hablarGus(t, d) {
+        const b = document.getElementById('gus-bubble');
+        b.innerText = t; b.style.display = 'block';
+        setTimeout(() => b.style.display = 'none', d);
+    }
+
+    function abrirMeta() {
+        const actual = localStorage.getItem('meta_v12') || 1000;
+        document.getElementById('modal-titulo').innerText = "Ajustar Meta";
+        document.getElementById('modal-body').innerHTML = `<input type="number" id="nuevaMeta" value="${actual}" style="width:100%; padding:10px;"><button onclick="localStorage.setItem('meta_v12', document.getElementById('nuevaMeta').value); cerrarModal(); cargar();" style="width:100%; margin-top:10px;">Guardar</button>`;
+        document.getElementById('modal-master').style.display = 'flex';
+    }
+
+    function cerrarModal() { document.getElementById('modal-master').style.display = 'none'; }
+    window.onload = cargar;
 </script>
-
 </body>
 </html>
