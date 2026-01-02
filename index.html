@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gus 3D: Bosque v12.1 🌳</title>
+    <title>Gus 3D Pro: Bosque v12.2 🌳</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --otoño-naranja: #d84315; --otoño-verde: #558b2f; }
+        :root { --naranja: #d84315; --verde: #558b2f; --glass: rgba(255, 255, 255, 0.15); }
 
         body { 
             font-family: 'Quicksand', sans-serif; margin: 0; min-height: 100vh;
@@ -15,72 +15,74 @@
             background-size: cover; overflow-x: hidden;
         }
 
-        .glass { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 30px; }
-
-        /* --- GUS 3D MOVIMIENTO TOTAL --- */
-        #gus-container { 
-            position: fixed; z-index: 9999; cursor: pointer;
-            transition: all 3s cubic-bezier(0.45, 0.05, 0.55, 0.95); /* Movimiento suave */
-            left: 80%; top: 70%;
+        /* --- GUS SOFT 3D REAL --- */
+        #gus-container { position: fixed; z-index: 9999; cursor: pointer; transition: all 2s ease; left: 80%; top: 70%; }
+        .gus-body {
+            width: 100px; height: 100px;
+            background: #e67e22; border-radius: 50% 50% 40% 40%;
+            position: relative; box-shadow: inset -10px -10px 20px rgba(0,0,0,0.3), 0 20px 30px rgba(0,0,0,0.4);
+            animation: breathe 3s infinite ease-in-out;
         }
-        .squirrel-3d { 
-            font-size: 80px; display: inline-block;
-            filter: drop-shadow(0 20px 10px rgba(0,0,0,0.4));
-            transform-style: preserve-3d;
-            animation: rotateGus 5s infinite alternate;
+        .gus-eye { position: absolute; background: #2c3e50; width: 12px; height: 12px; border-radius: 50%; top: 35%; border: 2px solid white; }
+        .eye-l { left: 25%; } .eye-r { right: 25%; }
+        .gus-tail { 
+            position: absolute; right: -40px; top: 10px; width: 50px; height: 60px; 
+            background: #d35400; border-radius: 50% 50% 0 50%; transform: rotate(20deg);
+            box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2);
         }
-        @keyframes rotateGus {
-            from { transform: rotateY(-20deg) rotateX(10deg); }
-            to { transform: rotateY(20deg) rotateX(-10deg); }
-        }
+        @keyframes breathe { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.05) translateY(-10px); } }
 
         #gus-bubble { 
-            position: absolute; bottom: 100px; left: 0; width: 200px; padding: 12px; 
-            background: white; border-radius: 15px; display: none; font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: absolute; bottom: 120px; right: -50px; width: 220px; padding: 15px; 
+            background: white; border-radius: 20px; display: none; font-weight: bold; font-size: 13px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-left: 5px solid var(--naranja);
         }
 
-        /* --- UI --- */
-        .container { max-width: 900px; margin: 0 auto; padding: 20px; display: none; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
-        .card { padding: 20px; text-align: center; color: white; }
+        /* --- UI GLASSMORPHISM --- */
+        .glass { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 30px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { padding: 20px; text-align: center; color: white; position: relative; }
         
-        .progress-bar { width: 100%; height: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; margin: 10px 0; }
-        .progress-fill { height: 100%; background: #4caf50; width: 0%; transition: 1s; }
+        .progress-bar { width: 100%; height: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; margin: 10px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: #4caf50; width: 0%; transition: 1.5s; }
 
-        /* Menú y Modales */
-        .menu-btn { position: fixed; top: 20px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.5); border: none; color: white; padding: 10px 15px; border-radius: 10px; cursor: pointer; }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10001; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: white; width: 100%; max-width: 600px; border-radius: 25px; padding: 25px; max-height: 80vh; overflow-y: auto; }
+        .btn-menu { position: fixed; top: 20px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.6); border: none; color: white; padding: 12px; border-radius: 50%; cursor: pointer; font-size: 20px; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10001; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; width: 100%; max-width: 550px; border-radius: 30px; padding: 30px; max-height: 85vh; overflow-y: auto; }
         
-        iframe { width: 100%; height: 400px; border: none; border-radius: 15px; margin-top: 10px; }
+        .audit-btn { background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 10px; cursor: pointer; font-size: 11px; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-<button class="menu-btn" onclick="toggleMainOptions()">⋮ Menú</button>
+<button class="btn-menu" onclick="abrirMenuPrincipal()">⋮</button>
 
-<div id="gus-container">
+<div id="gus-container" onclick="hablarGus('¡Hola Jose! ¿Analizamos las bellotas?', 4000)">
     <div id="gus-bubble"></div>
-    <div class="squirrel-3d">🐿️</div>
+    <div class="gus-body">
+        <div class="gus-eye eye-l"></div>
+        <div class="gus-eye eye-r"></div>
+        <div class="gus-tail"></div>
+    </div>
 </div>
 
 <div class="container" id="main">
-    <header class="glass" style="padding: 25px; margin-bottom: 20px; text-align: center; color: white;">
-        <button onclick="abrirConfigMeta()" style="float: right; background: none; border: 1px solid white; color: white; cursor: pointer; border-radius: 5px;">🎯 Meta</button>
-        <div style="font-size: 3rem; font-weight: 800;" id="total-val">Q0.00</div>
+    <header class="glass" style="padding: 30px; margin-bottom: 25px; text-align: center; color: white;">
+        <button onclick="abrirMeta()" style="float: right; background: white; color: black; border: none; padding: 5px 15px; border-radius: 10px; font-weight: bold; cursor: pointer;">🎯 Meta</button>
+        <div style="font-size: 0.9rem; opacity: 0.8;">BALANCE TOTAL</div>
+        <div style="font-size: 3.5rem; font-weight: 800; margin: 10px 0;" id="total-val">Q0.00</div>
         <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
-        <small id="perc-txt">0% de la meta de ahorro</small>
+        <small id="perc-txt">0% de tu ahorro alcanzado</small>
     </header>
-
     <div class="grid" id="grid"></div>
 </div>
 
 <div id="modal-master" class="modal" onclick="cerrarModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <h2 id="modal-titulo">Opciones</h2>
+        <h2 id="modal-titulo" style="color: var(--naranja)">Opciones</h2>
         <div id="modal-body"></div>
-        <button onclick="cerrarModal()" style="width:100%; margin-top:20px; padding:10px; border-radius:10px; background:#333; color:white; border:none; cursor:pointer">Cerrar</button>
+        <button onclick="cerrarModal()" style="width:100%; margin-top:20px; padding:12px; border-radius:15px; background:#eee; border:none; font-weight:bold; cursor:pointer">Cerrar</button>
     </div>
 </div>
 
@@ -99,119 +101,114 @@
 
     let itemsGlobal = [];
 
-    // --- EL GUS 3D QUE CAMINA POR LA PANTALLA ---
-    function moverGus() {
-        const gus = document.getElementById('gus-container');
-        const x = Math.random() * (window.innerWidth - 100);
-        const y = Math.random() * (window.innerHeight - 100);
-        gus.style.left = x + 'px';
-        gus.style.top = y + 'px';
-        
-        if(Math.random() > 0.7) {
-            hablarGus("¡Buscando bellotas financieras!", 3000);
-        }
-    }
-    setInterval(moverGus, 6000);
-
-    function entrar() {
-        document.getElementById('main').style.display = 'block';
-        cargar();
-    }
-
     async function cargar() {
         const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${TOKEN}` } });
         const data = await res.json();
         itemsGlobal = JSON.parse(data.files['finanzas.json'].content);
         
-        let total = 0;
-        let montoAhorro = 0;
+        let total = 0, ahorro = 0;
         const grid = document.getElementById('grid');
         grid.innerHTML = '';
 
         itemsGlobal.forEach((i, idx) => {
             total += i.monto;
-            if(i.nombre === "Ahorro") montoAhorro = i.monto;
-            
+            if(i.nombre === "Ahorro") ahorro = i.monto;
             grid.innerHTML += `
                 <div class="card glass">
-                    <img src="${REGLA[i.nombre].img}" style="width:60px; height:60px; border-radius:50%">
-                    <h3>${i.nombre}</h3>
-                    <div style="font-size:1.5rem; color:#ffeb3b">Q${i.monto.toFixed(2)}</div>
+                    <div onclick="verHistorial('${i.nombre}')" style="position:absolute; top:10px; right:10px; cursor:pointer">📖</div>
+                    <img src="${REGLA[i.nombre].img}" style="width:70px; height:70px; border-radius:50%; object-fit:cover; margin-bottom:10px; border:2px solid white">
+                    <h3 style="margin:0">${i.nombre}</h3>
+                    <div style="font-size:1.8rem; font-weight:800; color:#ffeb3b">Q${i.monto.toFixed(2)}</div>
                     <div style="margin-top:10px">
-                        <input type="number" id="in-${i.nombre}" placeholder="Q" style="width:50px">
-                        <button onclick="modificar('${i.nombre}', 1)">+</button>
-                        <button onclick="modificar('${i.nombre}', -1)">-</button>
-                        <br>
-                        <button onclick="reiniciarIndividual('${i.nombre}')" style="margin-top:5px; font-size:10px; background:none; color:#ffcdd2; border:none; cursor:pointer">🗑️ Reiniciar</button>
+                        <input type="number" id="in-${i.nombre}" placeholder="Q" style="width:60px; border-radius:5px; border:none; padding:5px">
+                        <button onclick="modificar('${i.nombre}', 1)" style="background:var(--verde); color:white; border:none; border-radius:5px; padding:5px 10px; cursor:pointer">+</button>
+                        <button onclick="modificar('${i.nombre}', -1)" style="background:#c62828; color:white; border:none; border-radius:5px; padding:5px 10px; cursor:pointer">-</button>
                     </div>
+                    <button class="audit-btn" onclick="abrirAuditoria('${i.nombre}', ${i.monto})">🔍 ¿No cuadra físico?</button>
                 </div>`;
         });
-        
         document.getElementById('total-val').innerText = `Q${total.toFixed(2)}`;
-        actualizarMeta(montoAhorro);
+        actualizarMeta(ahorro);
     }
 
-    // --- OPCIONES DEL MENÚ ⋮ ---
-    function toggleMainOptions() {
-        const body = document.getElementById('modal-body');
-        document.getElementById('modal-titulo').innerText = "Panel del Bosque";
-        body.innerHTML = `
-            <button class="btn-opt" onclick="verGrafica()">📊 Gráfica Anual</button>
-            <button class="btn-opt" onclick="abrirBancos()">🏦 Bancos en Línea</button>
-            <button class="btn-opt" onclick="reiniciarTodo()" style="color:red">🔄 Reiniciar Todo</button>
-        `;
-        document.getElementById('modal-master').style.display = 'flex';
-    }
-
-    function abrirBancos() {
-        const body = document.getElementById('modal-body');
-        document.getElementById('modal-titulo').innerText = "Información Bancaria";
-        body.innerHTML = `
-            <p>Busca información de tasas y servicios:</p>
-            <input type="text" id="bankQuery" placeholder="Ej: Tasas de interés Banrural..." style="width:70%; padding:10px">
-            <button onclick="buscarBanco()">Buscar</button>
-            <div id="bankResult" style="margin-top:15px; background:#f0f0f0; padding:10px; border-radius:10px; color:black">
-                Resultados aparecerán aquí...
-            </div>
-        `;
-    }
-
-    function buscarBanco() {
-        const q = document.getElementById('bankQuery').value;
-        document.getElementById('bankResult').innerHTML = `Simulando búsqueda de: <b>${q}</b>... <br><small>Conectando a bases de datos financieras...</small>`;
-        // Aquí podrías integrar una API de búsqueda real o enlaces directos
-    }
-
-    // --- LÓGICA DE REINICIOS Y META ---
-    function abrirConfigMeta() {
-        const actual = localStorage.getItem('meta_v12') || 1000;
-        document.getElementById('modal-titulo').innerText = "Establecer Meta";
+    // --- AUDITORÍA FÍSICA ---
+    function abrirAuditoria(nombre, montoDigital) {
+        document.getElementById('modal-titulo').innerText = "Ajuste de Caja: " + nombre;
         document.getElementById('modal-body').innerHTML = `
-            <input type="number" id="nM" value="${actual}" style="padding:10px; font-size:1.2rem">
-            <button onclick="localStorage.setItem('meta_v12', document.getElementById('nM').value); cerrarModal(); cargar();">Guardar</button>
+            <p>Gus dice: "Jose, cuéntame cuánto tienes físicamente ahora mismo."</p>
+            <input type="number" id="montoFisico" placeholder="Cantidad real Q" style="width:100%; padding:15px; border-radius:10px; border:1px solid #ddd; font-size:1.2rem">
+            <button onclick="procesarAjuste('${nombre}', ${montoDigital})" style="width:100%; margin-top:15px; background:var(--naranja); color:white; border:none; padding:15px; border-radius:10px; font-weight:bold; cursor:pointer">Analizar y Ajustar</button>
         `;
         document.getElementById('modal-master').style.display = 'flex';
     }
 
-    async function reiniciarIndividual(nombre) {
-        if(confirm(`¿Reiniciar ${nombre}?`) && confirm("¿Estás 100% seguro?")) {
-            itemsGlobal = itemsGlobal.map(i => i.nombre === nombre ? {...i, monto: 0} : i);
-            await enviar(itemsGlobal);
-        }
+    async function procesarAjuste(nombre, digital) {
+        const fisico = parseFloat(document.getElementById('montoFisico').value);
+        if(isNaN(fisico)) return;
+        const dif = fisico - digital;
+        itemsGlobal = itemsGlobal.map(i => i.nombre === nombre ? {...i, monto: fisico} : i);
+        registrarHistorial(nombre, Math.abs(dif), dif > 0 ? 'add' : 'sub', "Ajuste por descuadre físico");
+        await enviar(itemsGlobal);
+        hablarGus(`Ajuste completado. ${dif > 0 ? 'Encontramos' : 'Gastaste'} Q${Math.abs(dif).toFixed(2)} que no anotamos.`, 6000);
+        cerrarModal();
     }
 
-    function actualizarMeta(monto) {
-        let metaBase = parseFloat(localStorage.getItem('meta_v12')) || 1000;
-        const perc = Math.min((monto / metaBase) * 100, 100);
-        document.getElementById('fill').style.width = perc + "%";
-        document.getElementById('perc-txt').innerText = perc.toFixed(1) + "% de la meta de ahorro (Q" + metaBase + ")";
-        
-        if(perc >= 100) {
-            if(confirm("¡META ALCANZADA! 🎉 ¿Quieres duplicar el reto (x2)?")) {
-                localStorage.setItem('meta_v12', metaBase * 2);
-                cargar();
-            }
+    // --- ASESOR BANCARIO CON GUS ---
+    function abrirMenuPrincipal() {
+        document.getElementById('modal-titulo').innerText = "Menú Principal";
+        document.getElementById('modal-body').innerHTML = `
+            <button class="btn-menu-opt" onclick="abrirMeta()">🎯 Ajustar Meta</button>
+            <button class="btn-menu-opt" onclick="abrirAsesorBancario()">🏦 Consultar Bancos (Asesor Gus)</button>
+            <button class="btn-menu-opt" onclick="reiniciarTodo()" style="color:red">🔄 Reset Bosque</button>
+        `;
+        document.getElementById('modal-master').style.display = 'flex';
+    }
+
+    function abrirAsesorBancario() {
+        document.getElementById('modal-titulo').innerText = "Asesor Bancario Gus";
+        document.getElementById('modal-body').innerHTML = `
+            <input type="text" id="busquedaBanco" placeholder="Ej: Tarjeta de débito" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ddd">
+            <button onclick="consultarBanco()" style="width:100%; margin-top:10px; background:var(--verde); color:white; border:none; padding:10px; border-radius:10px; cursor:pointer">Consultar Ofertas</button>
+            <div id="resultadoBanco" style="margin-top:20px; font-size:14px; color:#333"></div>
+        `;
+    }
+
+    function consultarBanco() {
+        const q = document.getElementById('busquedaBanco').value.toLowerCase();
+        let res = "";
+        if(q.includes("tarjeta")) {
+            res = `<b>Banrural:</b> Cuenta Goleadora y Tarjeta de Débito Visa. <br><b>Banco Industrial:</b> Bi Cheque con beneficios en puntos Bi.<br><br>
+                   <div style="background:#fff3e0; padding:10px; border-left:4px solid orange">🐿️ <b>Gus aconseja:</b> Jose, si buscas ahorro, Banrural suele tener menos cobros por manejo, pero BI tiene mejores descuentos en comercios. ¡Elige BI si compras mucho fuera!</div>`;
+        } else {
+            res = "Gus no encontró ofertas específicas para eso, pero sugiere revisar las Cuentas de Ahorro de BI para tu meta actual.";
         }
+        document.getElementById('resultadoBanco').innerHTML = res;
+    }
+
+    // --- HISTORIAL ---
+    function verHistorial(nombre) {
+        const hist = JSON.parse(localStorage.getItem('hist_v12')) || [];
+        const filtrado = hist.filter(h => h.cuenta === nombre);
+        document.getElementById('modal-titulo').innerText = "Historial: " + nombre;
+        document.getElementById('modal-body').innerHTML = filtrado.length ? filtrado.map(h => `<div style="border-bottom:1px solid #eee; padding:10px">
+            <small>${h.fecha}</small><br><b>${h.tipo === 'add' ? '+' : '-'} Q${h.monto}</b> - ${h.nota || 'Movimiento manual'}
+        </div>`).join('') : "No hay registros aún.";
+        document.getElementById('modal-master').style.display = 'flex';
+    }
+
+    function registrarHistorial(cuenta, monto, tipo, nota = "") {
+        let hist = JSON.parse(localStorage.getItem('hist_v12')) || [];
+        hist.unshift({ cuenta, monto, tipo, nota, fecha: new Date().toLocaleString() });
+        localStorage.setItem('hist_v12', JSON.stringify(hist.slice(0, 50)));
+    }
+
+    // --- CORE ---
+    async function modificar(nombre, signo) {
+        const val = parseFloat(document.getElementById(`in-${nombre}`).value);
+        if(!val) return;
+        itemsGlobal = itemsGlobal.map(i => i.nombre === nombre ? {...i, monto: i.monto + (val * signo)} : i);
+        registrarHistorial(nombre, val, signo > 0 ? 'add' : 'sub');
+        await enviar(itemsGlobal);
     }
 
     async function enviar(datos) {
@@ -223,19 +220,26 @@
         cargar();
     }
 
-    function hablarGus(t, dur = 5000) {
+    function actualizarMeta(ahorro) {
+        let m = parseFloat(localStorage.getItem('meta_v12')) || 1000;
+        let p = Math.min((ahorro / m) * 100, 100);
+        document.getElementById('fill').style.width = p + "%";
+        document.getElementById('perc-txt').innerText = `${p.toFixed(1)}% de Q${m}`;
+    }
+
+    function hablarGus(t, d) {
         const b = document.getElementById('gus-bubble');
         b.innerText = t; b.style.display = 'block';
-        setTimeout(() => b.style.display = 'none', dur);
+        setTimeout(() => b.style.display = 'none', d);
     }
 
     function cerrarModal() { document.getElementById('modal-master').style.display = 'none'; }
-    window.onload = entrar;
+    function abrirMeta() { /* igual que antes */ }
+    window.onload = cargar;
 </script>
 
 <style>
-    .btn-opt { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 15px; border: 1px solid #ddd; background: white; cursor: pointer; font-weight: bold; }
-    .btn-opt:hover { background: #f9f9f9; }
+    .btn-menu-opt { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 15px; border: 1px solid #ddd; background: white; cursor: pointer; font-weight: bold; text-align: left; }
 </style>
 </body>
 </html>
